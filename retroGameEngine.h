@@ -22,10 +22,10 @@
 		}
 		bool OnUserUpdate(float fElapsedTime) override
 		{
-			// called once per frame, draws random coloured pixels
+			// called once per frame, draws random coloured spaces
 			for (int x = 0; x < ScreenWidth(); x++)
 				for (int y = 0; y < ScreenHeight(); y++)
-					Draw(x, y, jpr::Pixel(rand() % 255, rand() % 255, rand()% 255));
+					Draw(x, y, jpr::Retro(rand() % 255, rand() % 255, rand()% 255));
 			return true;
 		}
 	};
@@ -133,7 +133,7 @@
 
 namespace jpr // All stuff will now exist in the "jpr" namespace
 {
-	struct Pixel
+	struct Retro
 	{
 		union
 		{
@@ -144,17 +144,17 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 			};
 		};
 
-		Pixel();
-		Pixel(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255);
-		Pixel(uint32_t p);
+		Retro();
+		Retro(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255);
+		Retro(uint32_t p);
 		enum Mode { NORMAL, MASK, ALPHA, CUSTOM };
 
-		bool operator==(const Pixel& p) const;
-		bool operator!=(const Pixel& p) const;
+		bool operator==(const Retro& p) const;
+		bool operator!=(const Retro& p) const;
 	};
 
-	// Some constants for the symbolic naming of Pixels
-	static const Pixel
+	// Some constants for the symbolic naming of spaces
+	static const Retro
 		WHITE(255, 255, 255),
 		GREY(192, 192, 192), DARK_GREY(128, 128, 128), VERY_DARK_GREY(64, 64, 64),
 		RED(255, 0, 0), DARK_RED(128, 0, 0), VERY_DARK_RED(64, 0, 0),
@@ -251,7 +251,7 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 
 	//=============================================================
 
-	// An structure like a bitmap that stores a 2D array of pixels on the memory for screen
+	// An structure like a bitmap that stores a 2D array of spaces on the memory for screen
 	class Sprite
 	{
 	public:
@@ -272,15 +272,15 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 
 	public:
 		void SetSampleMode(jpr::Sprite::Mode mode = jpr::Sprite::Mode::NORMAL);
-		Pixel GetPixel(int32_t x, int32_t y);
-		bool  SetPixel(int32_t x, int32_t y, Pixel p);
+		Retro GetRetro(int32_t x, int32_t y);
+		bool  SetRetro(int32_t x, int32_t y, Retro p);
 
-		Pixel Sample(float x, float y);
-		Pixel SampleBL(float u, float v);
-		Pixel* GetData();
+		Retro Sample(float x, float y);
+		Retro SampleBL(float u, float v);
+		Retro* GetData();
 
 	private:
-		Pixel *pColData = nullptr;
+		Retro *pColData = nullptr;
 		Mode modeSample = Mode::NORMAL;
 
 #ifdef jpr_DBG_OVERDRAW
@@ -314,7 +314,7 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		retroGameEngine();
 
 	public:
-		jpr::rcode	Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen = false, bool vsync = false);
+		jpr::rcode	Construct(uint32_t screen_w, uint32_t screen_h, uint32_t Retro_w, uint32_t Retro_h, bool full_screen = false, bool vsync = false);
 		jpr::rcode	Start();
 
 	public: // Override Default Interfaces
@@ -332,21 +332,21 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		HWButton GetKey(Key k);
 		// Get the state of the pressed button on the mouse.
 		HWButton GetMouse(uint32_t b);
-		// Get the cursor and mouse X coordinate for and into the "pixel" space and position.
+		// Get the cursor and mouse X coordinate for and into the space and position.
 		int32_t GetMouseX();
-		// Get the cursor and mouse Y coordinate for and into the "pixel" space and position.
+		// Get the cursor and mouse Y coordinate for and into the space and position.
 		int32_t GetMouseY();
 		// Get the cursor and mouse delta wheel position and space.
 		int32_t GetMouseWheel();
 
-	public: // Utility
-		// Returns the width of the screen in "pixels"
+	public: // Utilities
+		// Returns the width of the screen in "spaces
 		int32_t ScreenWidth();
-		// Returns the height of the screen in "pixels"
+		// Returns the height of the screen in "spaces"
 		int32_t ScreenHeight();
-		// Returns the width of the currently selected drawing target in "pixels"
+		// Returns the width of the currently selected drawing target in "spaces"
 		int32_t GetDrawTargetWidth();
-		// Returns the height of the currently selected drawing target in "pixels"
+		// Returns the height of the currently selected drawing target in "spaces"
 		int32_t GetDrawTargetHeight();
 		// Returns the currently active draw target
 		Sprite* GetDrawTarget();
@@ -355,43 +355,43 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		// Specify which Sprite should be the target of drawing functions, use nullptr
 		// to specify the primary screen
 		void SetDrawTarget(Sprite *target);
-		// Change the pixel mode for different optimisations
-		// jpr::Pixel::NORMAL = No transparency
-		// jpr::Pixel::MASK   = Transparent if alpha is < 255
-		// jpr::Pixel::ALPHA  = Full transparency
-		void SetPixelMode(Pixel::Mode m);
-		Pixel::Mode GetPixelMode();
+		// Change the Retro mode for different optimisations
+		// jpr::Retro::NORMAL = No transparency
+		// jpr::Retro::MASK   = Transparent if alpha is < 255
+		// jpr::Retro::ALPHA  = Full transparency
+		void SetRetroMode(Retro::Mode m);
+		Retro::Mode GetRetroMode();
 		// Use a custom blend function
-		void SetPixelMode(std::function<jpr::Pixel(const int x, const int y, const jpr::Pixel& pSource, const jpr::Pixel& pDest)> pixelMode);
+		void SetRetroMode(std::function<jpr::Retro(const int x, const int y, const jpr::Retro& pSource, const jpr::Retro& pDest)> RetroMode);
 		// Change the blend factor form between 0.0f to 1.0f;
-		void SetPixelBlend(float fBlend);
-		// Offset texels by sub-pixel amount (advanced, do not use)
-		void SetSubPixelOffset(float ox, float oy);
+		void SetRetroBlend(float fBlend);
+		// Offset texels by sub-Retro amount (advanced, do not use)
+		void SetSubRetroOffset(float ox, float oy);
 
-		// Draws a single Pixel
-		virtual bool Draw(int32_t x, int32_t y, Pixel p = jpr::WHITE);
-		bool Draw(const jpr::vi2d& pos, Pixel p = jpr::WHITE);
+		// Draws a single Retro
+		virtual bool Draw(int32_t x, int32_t y, Retro p = jpr::WHITE);
+		bool Draw(const jpr::vi2d& pos, Retro p = jpr::WHITE);
 		// Draws a line from (x1,y1) to (x2,y2)
-		void DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, Pixel p = jpr::WHITE, uint32_t pattern = 0xFFFFFFFF);
-		void DrawLine(const jpr::vi2d& pos1, const jpr::vi2d& pos2, Pixel p = jpr::WHITE, uint32_t pattern = 0xFFFFFFFF);
+		void DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, Retro p = jpr::WHITE, uint32_t pattern = 0xFFFFFFFF);
+		void DrawLine(const jpr::vi2d& pos1, const jpr::vi2d& pos2, Retro p = jpr::WHITE, uint32_t pattern = 0xFFFFFFFF);
 		// Draws a circle located at (x,y) with radius
-		void DrawCircle(int32_t x, int32_t y, int32_t radius, Pixel p = jpr::WHITE, uint8_t mask = 0xFF);
-		void DrawCircle(const jpr::vi2d& pos, int32_t radius, Pixel p = jpr::WHITE, uint8_t mask = 0xFF);
+		void DrawCircle(int32_t x, int32_t y, int32_t radius, Retro p = jpr::WHITE, uint8_t mask = 0xFF);
+		void DrawCircle(const jpr::vi2d& pos, int32_t radius, Retro p = jpr::WHITE, uint8_t mask = 0xFF);
 		// Fills a circle located at (x,y) with radius
-		void FillCircle(int32_t x, int32_t y, int32_t radius, Pixel p = jpr::WHITE);
-		void FillCircle(const jpr::vi2d& pos, int32_t radius, Pixel p = jpr::WHITE);
+		void FillCircle(int32_t x, int32_t y, int32_t radius, Retro p = jpr::WHITE);
+		void FillCircle(const jpr::vi2d& pos, int32_t radius, Retro p = jpr::WHITE);
 		// Draws a rectangle at (x,y) to (x+w,y+h)
-		void DrawRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p = jpr::WHITE);
-		void DrawRect(const jpr::vi2d& pos, const jpr::vi2d& size, Pixel p = jpr::WHITE);
+		void DrawRect(int32_t x, int32_t y, int32_t w, int32_t h, Retro p = jpr::WHITE);
+		void DrawRect(const jpr::vi2d& pos, const jpr::vi2d& size, Retro p = jpr::WHITE);
 		// Fills a rectangle at (x,y) to (x+w,y+h)
-		void FillRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p = jpr::WHITE);
-		void FillRect(const jpr::vi2d& pos, const jpr::vi2d& size, Pixel p = jpr::WHITE);
+		void FillRect(int32_t x, int32_t y, int32_t w, int32_t h, Retro p = jpr::WHITE);
+		void FillRect(const jpr::vi2d& pos, const jpr::vi2d& size, Retro p = jpr::WHITE);
 		// Draws a triangle between points (x1,y1), (x2,y2) and (x3,y3)
-		void DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p = jpr::WHITE);
-		void DrawTriangle(const jpr::vi2d& pos1, const jpr::vi2d& pos2, const jpr::vi2d& pos3, Pixel p = jpr::WHITE);
+		void DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Retro p = jpr::WHITE);
+		void DrawTriangle(const jpr::vi2d& pos1, const jpr::vi2d& pos2, const jpr::vi2d& pos3, Retro p = jpr::WHITE);
 		// Flat fills a triangle between points (x1,y1), (x2,y2) and (x3,y3)
-		void FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p = jpr::WHITE);
-		void FillTriangle(const jpr::vi2d& pos1, const jpr::vi2d& pos2, const jpr::vi2d& pos3, Pixel p = jpr::WHITE);
+		void FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Retro p = jpr::WHITE);
+		void FillTriangle(const jpr::vi2d& pos1, const jpr::vi2d& pos2, const jpr::vi2d& pos3, Retro p = jpr::WHITE);
 		// Draws an entire sprite at location (x,y)
 		void DrawSprite(int32_t x, int32_t y, Sprite *sprite, uint32_t scale = 1);
 		void DrawSprite(const jpr::vi2d& pos, Sprite *sprite, uint32_t scale = 1);
@@ -400,10 +400,10 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		void DrawPartialSprite(int32_t x, int32_t y, Sprite *sprite, int32_t ox, int32_t oy, int32_t w, int32_t h, uint32_t scale = 1);
 		void DrawPartialSprite(const jpr::vi2d& pos, Sprite *sprite, const jpr::vi2d& sourcepos, const jpr::vi2d& size, uint32_t scale = 1);
 		// Draws a single line of text
-		void DrawString(int32_t x, int32_t y, const std::string& sText, Pixel col = jpr::WHITE, uint32_t scale = 1);
-		void DrawString(const jpr::vi2d& pos, const std::string& sText, Pixel col = jpr::WHITE, uint32_t scale = 1);
-		// Clears entire draw target to Pixel
-		void Clear(Pixel p);
+		void DrawString(int32_t x, int32_t y, const std::string& sText, Retro col = jpr::WHITE, uint32_t scale = 1);
+		void DrawString(const jpr::vi2d& pos, const std::string& sText, Retro col = jpr::WHITE, uint32_t scale = 1);
+		// Clears entire draw target to Retro
+		void Clear(Retro p);
 		// Resize the primary screen sprite
 		void SetScreenSize(int w, int h);
 
@@ -413,12 +413,12 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 	private: // Inner mysterious workings
 		Sprite		*pDefaultDrawTarget = nullptr;
 		Sprite		*pDrawTarget = nullptr;
-		Pixel::Mode	nPixelMode = Pixel::NORMAL;
+		Retro::Mode	nRetroMode = Retro::NORMAL;
 		float		fBlendFactor = 1.0f;
 		uint32_t	nScreenWidth = 256;
 		uint32_t	nScreenHeight = 240;
-		uint32_t	nPixelWidth = 4;
-		uint32_t	nPixelHeight = 4;
+		uint32_t	nRetroWidth = 4;
+		uint32_t	nRetroHeight = 4;
 		int32_t		nMousePosX = 0;
 		int32_t		nMousePosY = 0;
 		int32_t		nMouseWheelDelta = 0;
@@ -432,17 +432,17 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		int32_t		nViewW = 0;
 		int32_t		nViewH = 0;
 		bool		bFullScreen = false;
-		float		fPixelX = 1.0f;
-		float		fPixelY = 1.0f;
-		float		fSubPixelOffsetX = 0.0f;
-		float		fSubPixelOffsetY = 0.0f;
+		float		fRetroX = 1.0f;
+		float		fRetroY = 1.0f;
+		float		fSubRetroOffsetX = 0.0f;
+		float		fSubRetroOffsetY = 0.0f;
 		bool		bHasInputFocus = false;
 		bool		bHasMouseFocus = false;
 		bool		bEnableVSYNC = false;
 		float		fFrameTimer = 1.0f;
 		int			nFrameCount = 0;
 		Sprite		*fontSprite = nullptr;
-		std::function<jpr::Pixel(const int x, const int y, const jpr::Pixel&, const jpr::Pixel&)> funcPixelMode;
+		std::function<jpr::Retro(const int x, const int y, const jpr::Retro&, const jpr::Retro&)> funcRetroMode;
 
 		static std::map<size_t, uint8_t> mapKeys;
 		bool		pKeyNewState[256]{ 0 };
@@ -539,27 +539,27 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 
 namespace jpr
 {
-	Pixel::Pixel()
+	Retro::Retro()
 	{
 		r = 0; g = 0; b = 0; a = 255;
 	}
 
-	Pixel::Pixel(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
+	Retro::Retro(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 	{
 		r = red; g = green; b = blue; a = alpha;
 	}
 
-	Pixel::Pixel(uint32_t p)
+	Retro::Retro(uint32_t p)
 	{
 		n = p;
 	}
 
-	bool Pixel::operator==(const Pixel& p) const
+	bool Retro::operator==(const Retro& p) const
 	{
 		return n == p.n;
 	}
 
-	bool Pixel::operator!=(const Pixel& p) const
+	bool Retro::operator!=(const Retro& p) const
 	{
 		return n != p.n;
 	}
@@ -600,9 +600,9 @@ namespace jpr
 	{
 		if(pColData) delete[] pColData;
 		width = w;		height = h;
-		pColData = new Pixel[width * height];
+		pColData = new Retro[width * height];
 		for (int32_t i = 0; i < width*height; i++)
-			pColData[i] = Pixel();
+			pColData[i] = Retro();
 	}
 
 	Sprite::~Sprite()
@@ -618,7 +618,7 @@ namespace jpr
 		{
 			is.read((char*)&width, sizeof(int32_t));
 			is.read((char*)&height, sizeof(int32_t));
-			pColData = new Pixel[width * height];
+			pColData = new Retro[width * height];
 			is.read((char*)pColData, width * height * sizeof(uint32_t));
 		};
 
@@ -694,14 +694,14 @@ namespace jpr
 		if (bmp == nullptr) return jpr::NO_FILE;
 		width = bmp->GetWidth();
 		height = bmp->GetHeight();
-		pColData = new Pixel[width * height];
+		pColData = new Retro[width * height];
 
 		for(int x=0; x<width; x++)
 			for (int y = 0; y < height; y++)
 			{
 				Gdiplus::Color c;
-				bmp->GetPixel(x, y, &c);
-				SetPixel(x, y, Pixel(c.GetRed(), c.GetGreen(), c.GetBlue(), c.GetAlpha()));
+				bmp->GetRetro(x, y, &c);
+				SetRetro(x, y, Retro(c.GetRed(), c.GetGreen(), c.GetBlue(), c.GetAlpha()));
 			}
 		delete bmp;
 		return jpr::OK;
@@ -747,7 +747,7 @@ namespace jpr
 			png_read_image(png, row_pointers);
 			////////////////////////////////////////////////////////////////////////////
 			// Create sprite array
-			pColData = new Pixel[width * height];
+			pColData = new Retro[width * height];
 			// Iterate through image rows, converting into sprite format
 			for (int y = 0; y < height; y++)
 			{
@@ -755,7 +755,7 @@ namespace jpr
 				for (int x = 0; x < width; x++)
 				{
 					png_bytep px = &(row[x * 4]);
-					SetPixel(x, y, Pixel(px[0], px[1], px[2], px[3]));
+					SetRetro(x, y, Retro(px[0], px[1], px[2], px[3]));
 				}
 			}
 		};
@@ -800,14 +800,14 @@ namespace jpr
 	}
 
 
-	Pixel Sprite::GetPixel(int32_t x, int32_t y)
+	Retro Sprite::GetRetro(int32_t x, int32_t y)
 	{
 		if (modeSample == jpr::Sprite::Mode::NORMAL)
 		{
 			if (x >= 0 && x < width && y >= 0 && y < height)
 				return pColData[y*width + x];
 			else
-				return Pixel(0, 0, 0, 0);
+				return Retro(0, 0, 0, 0);
 		}
 		else
 		{
@@ -815,7 +815,7 @@ namespace jpr
 		}
 	}
 
-	bool Sprite::SetPixel(int32_t x, int32_t y, Pixel p)
+	bool Sprite::SetRetro(int32_t x, int32_t y, Retro p)
 	{
 
 #ifdef jpr_DBG_OVERDRAW
@@ -831,14 +831,14 @@ namespace jpr
 			return false;
 	}
 
-	Pixel Sprite::Sample(float x, float y)
+	Retro Sprite::Sample(float x, float y)
 	{
 		int32_t sx = std::min((int32_t)((x * (float)width)), width - 1);
 		int32_t sy = std::min((int32_t)((y * (float)height)), height - 1);
-		return GetPixel(sx, sy);
+		return GetRetro(sx, sy);
 	}
 
-	Pixel Sprite::SampleBL(float u, float v)
+	Retro Sprite::SampleBL(float u, float v)
 	{
 		u = u * width - 0.5f;
 		v = v * height - 0.5f;
@@ -849,18 +849,18 @@ namespace jpr
 		float u_opposite = 1 - u_ratio;
 		float v_opposite = 1 - v_ratio;
 
-		jpr::Pixel p1 = GetPixel(std::max(x, 0), std::max(y, 0));
-		jpr::Pixel p2 = GetPixel(std::min(x + 1, (int)width - 1), std::max(y, 0));
-		jpr::Pixel p3 = GetPixel(std::max(x, 0), std::min(y + 1, (int)height - 1));
-		jpr::Pixel p4 = GetPixel(std::min(x + 1, (int)width - 1), std::min(y + 1, (int)height - 1));
+		jpr::Retro p1 = GetRetro(std::max(x, 0), std::max(y, 0));
+		jpr::Retro p2 = GetRetro(std::min(x + 1, (int)width - 1), std::max(y, 0));
+		jpr::Retro p3 = GetRetro(std::max(x, 0), std::min(y + 1, (int)height - 1));
+		jpr::Retro p4 = GetRetro(std::min(x + 1, (int)width - 1), std::min(y + 1, (int)height - 1));
 
-		return jpr::Pixel(
+		return jpr::Retro(
 			(uint8_t)((p1.r * u_opposite + p2.r * u_ratio) * v_opposite + (p3.r * u_opposite + p4.r * u_ratio) * v_ratio),
 			(uint8_t)((p1.g * u_opposite + p2.g * u_ratio) * v_opposite + (p3.g * u_opposite + p4.g * u_ratio) * v_ratio),
 			(uint8_t)((p1.b * u_opposite + p2.b * u_ratio) * v_opposite + (p3.b * u_opposite + p4.b * u_ratio) * v_ratio));
 	}
 
-	Pixel* Sprite::GetData() { return pColData; }
+	Retro* Sprite::GetData() { return pColData; }
 
 	//==========================================================
 	// Resource Packs - Allows you to store files in one large 
@@ -1032,19 +1032,19 @@ namespace jpr
 		jpr::PGEX::pge = this;
 	}
 
-	jpr::rcode retroGameEngine::Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen, bool vsync)
+	jpr::rcode retroGameEngine::Construct(uint32_t screen_w, uint32_t screen_h, uint32_t Retro_w, uint32_t Retro_h, bool full_screen, bool vsync)
 	{
 		nScreenWidth = screen_w;
 		nScreenHeight = screen_h;
-		nPixelWidth = pixel_w;
-		nPixelHeight = pixel_h;
+		nRetroWidth = Retro_w;
+		nRetroHeight = Retro_h;
 		bFullScreen = full_screen;
 		bEnableVSYNC = vsync;
 
-		fPixelX = 2.0f / (float)(nScreenWidth);
-		fPixelY = 2.0f / (float)(nScreenHeight);
+		fRetroX = 2.0f / (float)(nScreenWidth);
+		fRetroY = 2.0f / (float)(nScreenHeight);
 
-		if (nPixelWidth == 0 || nPixelHeight == 0 || nScreenWidth == 0 || nScreenHeight == 0)
+		if (nRetroWidth == 0 || nRetroHeight == 0 || nScreenWidth == 0 || nScreenHeight == 0)
 			return jpr::FAIL;
 
 #if defined(_WIN32) && defined(UNICODE) && !defined(__MINGW32__)
@@ -1175,54 +1175,54 @@ namespace jpr
 		return nScreenHeight;
 	}
 
-	bool retroGameEngine::Draw(const jpr::vi2d& pos, Pixel p)
+	bool retroGameEngine::Draw(const jpr::vi2d& pos, Retro p)
 	{ return Draw(pos.x, pos.y, p); }
 
-	bool retroGameEngine::Draw(int32_t x, int32_t y, Pixel p)
+	bool retroGameEngine::Draw(int32_t x, int32_t y, Retro p)
 	{
 		if (!pDrawTarget) return false;
 
 
-		if (nPixelMode == Pixel::NORMAL)
+		if (nRetroMode == Retro::NORMAL)
 		{
-			return pDrawTarget->SetPixel(x, y, p);
+			return pDrawTarget->SetRetro(x, y, p);
 		}
 
-		if (nPixelMode == Pixel::MASK)
+		if (nRetroMode == Retro::MASK)
 		{
 			if(p.a == 255)
-				return pDrawTarget->SetPixel(x, y, p);
+				return pDrawTarget->SetRetro(x, y, p);
 		}
 
-		if (nPixelMode == Pixel::ALPHA)
+		if (nRetroMode == Retro::ALPHA)
 		{
-			Pixel d = pDrawTarget->GetPixel(x, y);
+			Retro d = pDrawTarget->GetRetro(x, y);
 			float a = (float)(p.a / 255.0f) * fBlendFactor;
 			float c = 1.0f - a;
 			float r = a * (float)p.r + c * (float)d.r;
 			float g = a * (float)p.g + c * (float)d.g;
 			float b = a * (float)p.b + c * (float)d.b;
-			return pDrawTarget->SetPixel(x, y, Pixel((uint8_t)r, (uint8_t)g, (uint8_t)b));
+			return pDrawTarget->SetRetro(x, y, Retro((uint8_t)r, (uint8_t)g, (uint8_t)b));
 		}
 
-		if (nPixelMode == Pixel::CUSTOM)
+		if (nRetroMode == Retro::CUSTOM)
 		{
-			return pDrawTarget->SetPixel(x, y, funcPixelMode(x, y, p, pDrawTarget->GetPixel(x, y)));
+			return pDrawTarget->SetRetro(x, y, funcRetroMode(x, y, p, pDrawTarget->GetRetro(x, y)));
 		}
 
 		return false;
 	}
 
-	void retroGameEngine::SetSubPixelOffset(float ox, float oy)
+	void retroGameEngine::SetSubRetroOffset(float ox, float oy)
 	{
-		fSubPixelOffsetX = ox * fPixelX;
-		fSubPixelOffsetY = oy * fPixelY;
+		fSubRetroOffsetX = ox * fRetroX;
+		fSubRetroOffsetY = oy * fRetroY;
 	}
 
-	void retroGameEngine::DrawLine(const jpr::vi2d& pos1, const jpr::vi2d& pos2, Pixel p, uint32_t pattern)
+	void retroGameEngine::DrawLine(const jpr::vi2d& pos1, const jpr::vi2d& pos2, Retro p, uint32_t pattern)
 	{ DrawLine(pos1.x, pos1.y, pos2.x, pos2.y, p, pattern);	}
 
-	void retroGameEngine::DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, Pixel p, uint32_t pattern)
+	void retroGameEngine::DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, Retro p, uint32_t pattern)
 	{
 		int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
 		dx = x2 - x1; dy = y2 - y1;
@@ -1307,10 +1307,10 @@ namespace jpr
 		}
 	}
 
-	void retroGameEngine::DrawCircle(const jpr::vi2d& pos, int32_t radius, Pixel p, uint8_t mask)
+	void retroGameEngine::DrawCircle(const jpr::vi2d& pos, int32_t radius, Retro p, uint8_t mask)
 	{ DrawCircle(pos.x, pos.y, radius, p, mask);}
 
-	void retroGameEngine::DrawCircle(int32_t x, int32_t y, int32_t radius, Pixel p, uint8_t mask)
+	void retroGameEngine::DrawCircle(int32_t x, int32_t y, int32_t radius, Retro p, uint8_t mask)
 	{
 		int x0 = 0;
 		int y0 = radius;
@@ -1332,10 +1332,10 @@ namespace jpr
 		}
 	}
 
-	void retroGameEngine::FillCircle(const jpr::vi2d& pos, int32_t radius, Pixel p)
+	void retroGameEngine::FillCircle(const jpr::vi2d& pos, int32_t radius, Retro p)
 	{ FillCircle(pos.x, pos.y, radius, p); }
 
-	void retroGameEngine::FillCircle(int32_t x, int32_t y, int32_t radius, Pixel p)
+	void retroGameEngine::FillCircle(int32_t x, int32_t y, int32_t radius, Retro p)
 	{
 		// Taken from wikipedia
 		int x0 = 0;
@@ -1361,10 +1361,10 @@ namespace jpr
 		}
 	}
 
-	void retroGameEngine::DrawRect(const jpr::vi2d& pos, const jpr::vi2d& size, Pixel p)
+	void retroGameEngine::DrawRect(const jpr::vi2d& pos, const jpr::vi2d& size, Retro p)
 	{ DrawRect(pos.x, pos.y, size.x, size.y, p); }
 
-	void retroGameEngine::DrawRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p)
+	void retroGameEngine::DrawRect(int32_t x, int32_t y, int32_t w, int32_t h, Retro p)
 	{
 		DrawLine(x, y, x+w, y, p);
 		DrawLine(x+w, y, x+w, y+h, p);
@@ -1372,21 +1372,21 @@ namespace jpr
 		DrawLine(x, y+h, x, y, p);
 	}
 
-	void retroGameEngine::Clear(Pixel p)
+	void retroGameEngine::Clear(Retro p)
 	{
-		int pixels = GetDrawTargetWidth() * GetDrawTargetHeight();
-		Pixel* m = GetDrawTarget()->GetData();
-		for (int i = 0; i < pixels; i++)
+		int spaces = GetDrawTargetWidth() * GetDrawTargetHeight();
+		Retro* m = GetDrawTarget()->GetData();
+		for (int i = 0; i < spaces; i++)
 			m[i] = p;
 #ifdef jpr_DBG_OVERDRAW
-		jpr::Sprite::nOverdrawCount += pixels;
+		jpr::Sprite::nOverdrawCount += spaces;
 #endif
 	}
 
-	void retroGameEngine::FillRect(const jpr::vi2d& pos, const jpr::vi2d& size, Pixel p)
+	void retroGameEngine::FillRect(const jpr::vi2d& pos, const jpr::vi2d& size, Retro p)
 	{ FillRect(pos.x, pos.y, size.x, size.y, p); }
 
-	void retroGameEngine::FillRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p)
+	void retroGameEngine::FillRect(int32_t x, int32_t y, int32_t w, int32_t h, Retro p)
 	{
 		int32_t x2 = x + w;
 		int32_t y2 = y + h;
@@ -1406,21 +1406,21 @@ namespace jpr
 				Draw(i, j, p);
 	}
 
-	void retroGameEngine::DrawTriangle(const jpr::vi2d& pos1, const jpr::vi2d& pos2, const jpr::vi2d& pos3, Pixel p)
+	void retroGameEngine::DrawTriangle(const jpr::vi2d& pos1, const jpr::vi2d& pos2, const jpr::vi2d& pos3, Retro p)
 	{ DrawTriangle(pos1.x, pos1.y, pos2.x, pos2.y, pos3.x, pos3.y, p); }
 
-	void retroGameEngine::DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p)
+	void retroGameEngine::DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Retro p)
 	{
 		DrawLine(x1, y1, x2, y2, p);
 		DrawLine(x2, y2, x3, y3, p);
 		DrawLine(x3, y3, x1, y1, p);
 	}
 
-	void retroGameEngine::FillTriangle(const jpr::vi2d& pos1, const jpr::vi2d& pos2, const jpr::vi2d& pos3, Pixel p)
+	void retroGameEngine::FillTriangle(const jpr::vi2d& pos1, const jpr::vi2d& pos2, const jpr::vi2d& pos3, Retro p)
 	{ FillTriangle(pos1.x, pos1.y, pos2.x, pos2.y, pos3.x, pos3.y, p); }
 
 	// https://www.avrfreaks.net/sites/default/files/triangles.c
-	void retroGameEngine::FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p)
+	void retroGameEngine::FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Retro p)
 	{
 		auto SWAP = [](int &x, int &y) { int t = x; x = y; y = t; };
 		auto drawline = [&](int sx, int ex, int ny) { for (int i = sx; i <= ex; i++) Draw(i, ny, p); };
@@ -1575,13 +1575,13 @@ namespace jpr
 				for (int32_t j = 0; j < sprite->height; j++)
 					for (uint32_t is = 0; is < scale; is++)
 						for (uint32_t js = 0; js < scale; js++)
-							Draw(x + (i*scale) + is, y + (j*scale) + js, sprite->GetPixel(i, j));
+							Draw(x + (i*scale) + is, y + (j*scale) + js, sprite->GetRetro(i, j));
 		}
 		else
 		{
 			for (int32_t i = 0; i < sprite->width; i++)
 				for (int32_t j = 0; j < sprite->height; j++)
-					Draw(x + i, y + j, sprite->GetPixel(i, j));
+					Draw(x + i, y + j, sprite->GetRetro(i, j));
 		}
 	}
 
@@ -1599,26 +1599,26 @@ namespace jpr
 				for (int32_t j = 0; j < h; j++)
 					for (uint32_t is = 0; is < scale; is++)
 						for (uint32_t js = 0; js < scale; js++)
-							Draw(x + (i*scale) + is, y + (j*scale) + js, sprite->GetPixel(i + ox, j + oy));
+							Draw(x + (i*scale) + is, y + (j*scale) + js, sprite->GetRetro(i + ox, j + oy));
 		}
 		else
 		{
 			for (int32_t i = 0; i < w; i++)
 				for (int32_t j = 0; j < h; j++)
-					Draw(x + i, y + j, sprite->GetPixel(i + ox, j + oy));
+					Draw(x + i, y + j, sprite->GetRetro(i + ox, j + oy));
 		}
 	}
 
-	void retroGameEngine::DrawString(const jpr::vi2d& pos, const std::string& sText, Pixel col, uint32_t scale)
+	void retroGameEngine::DrawString(const jpr::vi2d& pos, const std::string& sText, Retro col, uint32_t scale)
 	{ DrawString(pos.x, pos.y, sText, col, scale); }
 
-	void retroGameEngine::DrawString(int32_t x, int32_t y, const std::string& sText, Pixel col, uint32_t scale)
+	void retroGameEngine::DrawString(int32_t x, int32_t y, const std::string& sText, Retro col, uint32_t scale)
 	{
 		int32_t sx = 0;
 		int32_t sy = 0;
-		Pixel::Mode m = nPixelMode;
-		if(col.ALPHA != 255)	SetPixelMode(Pixel::ALPHA);
-		else					SetPixelMode(Pixel::MASK);
+		Retro::Mode m = nRetroMode;
+		if(col.ALPHA != 255)	SetRetroMode(Retro::ALPHA);
+		else					SetRetroMode(Retro::MASK);
 		for (auto c : sText)
 		{
 			if (c == '\n')
@@ -1634,7 +1634,7 @@ namespace jpr
 				{
 					for (uint32_t i = 0; i < 8; i++)
 						for (uint32_t j = 0; j < 8; j++)
-							if (fontSprite->GetPixel(i + ox * 8, j + oy * 8).r > 0)
+							if (fontSprite->GetRetro(i + ox * 8, j + oy * 8).r > 0)
 								for (uint32_t is = 0; is < scale; is++)
 									for (uint32_t js = 0; js < scale; js++)
 										Draw(x + sx + (i*scale) + is, y + sy + (j*scale) + js, col);
@@ -1643,32 +1643,32 @@ namespace jpr
 				{
 					for (uint32_t i = 0; i < 8; i++)
 						for (uint32_t j = 0; j < 8; j++)
-							if (fontSprite->GetPixel(i + ox * 8, j + oy * 8).r > 0)
+							if (fontSprite->GetRetro(i + ox * 8, j + oy * 8).r > 0)
 								Draw(x + sx + i, y + sy + j, col);
 				}
 				sx += 8 * scale;
 			}
 		}
-		SetPixelMode(m);
+		SetRetroMode(m);
 	}
 
-	void retroGameEngine::SetPixelMode(Pixel::Mode m)
+	void retroGameEngine::SetRetroMode(Retro::Mode m)
 	{
-		nPixelMode = m;
+		nRetroMode = m;
 	}
 
-	Pixel::Mode retroGameEngine::GetPixelMode()
+	Retro::Mode retroGameEngine::GetRetroMode()
 	{
-		return nPixelMode;
+		return nRetroMode;
 	}
 
-	void retroGameEngine::SetPixelMode(std::function<jpr::Pixel(const int x, const int y, const jpr::Pixel&, const jpr::Pixel&)> pixelMode)
+	void retroGameEngine::SetRetroMode(std::function<jpr::Retro(const int x, const int y, const jpr::Retro&, const jpr::Retro&)> RetroMode)
 	{
-		funcPixelMode = pixelMode;
-		nPixelMode = Pixel::Mode::CUSTOM;
+		funcRetroMode = RetroMode;
+		nRetroMode = Retro::Mode::CUSTOM;
 	}
 
-	void retroGameEngine::SetPixelBlend(float fBlend)
+	void retroGameEngine::SetRetroBlend(float fBlend)
 	{
 		fBlendFactor = fBlend;
 		if (fBlendFactor < 0.0f) fBlendFactor = 0.0f;
@@ -1688,8 +1688,8 @@ namespace jpr
 
 	void retroGameEngine::jpr_UpdateViewport()
 	{
-		int32_t ww = nScreenWidth * nPixelWidth;
-		int32_t wh = nScreenHeight * nPixelHeight;
+		int32_t ww = nScreenWidth * nRetroWidth;
+		int32_t wh = nScreenHeight * nRetroHeight;
 		float wasp = (float)ww / (float)wh;
 
 		nViewW = (int32_t)nWindowWidth;
@@ -1720,7 +1720,7 @@ namespace jpr
 	void retroGameEngine::jpr_UpdateMouse(int32_t x, int32_t y)
 	{
 		// Mouse coords come in screen space
-		// But leave in pixel space
+		// But leave in Retro space
 
 		// Full Screen mode may have a weird viewport we must clamp to
 		x -= nViewX;
@@ -1920,15 +1920,15 @@ namespace jpr
 				glViewport(nViewX, nViewY, nViewW, nViewH);
 
 				// TODO: This is a bit slow (especially in debug, but 100x faster in release mode???)
-				// Copy pixel array into texture
+				// Copy Retro array into texture
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, nScreenWidth, nScreenHeight, GL_RGBA, GL_UNSIGNED_BYTE, pDefaultDrawTarget->GetData());
 
 				// Display texture on screen
 				glBegin(GL_QUADS);
-					glTexCoord2f(0.0, 1.0); glVertex3f(-1.0f + (fSubPixelOffsetX), -1.0f + (fSubPixelOffsetY), 0.0f);
-					glTexCoord2f(0.0, 0.0); glVertex3f(-1.0f + (fSubPixelOffsetX),  1.0f + (fSubPixelOffsetY), 0.0f);
-					glTexCoord2f(1.0, 0.0); glVertex3f( 1.0f + (fSubPixelOffsetX),  1.0f + (fSubPixelOffsetY), 0.0f);
-					glTexCoord2f(1.0, 1.0); glVertex3f( 1.0f + (fSubPixelOffsetX), -1.0f + (fSubPixelOffsetY), 0.0f);
+					glTexCoord2f(0.0, 1.0); glVertex3f(-1.0f + (fSubRetroOffsetX), -1.0f + (fSubRetroOffsetY), 0.0f);
+					glTexCoord2f(0.0, 0.0); glVertex3f(-1.0f + (fSubRetroOffsetX),  1.0f + (fSubRetroOffsetY), 0.0f);
+					glTexCoord2f(1.0, 0.0); glVertex3f( 1.0f + (fSubRetroOffsetX),  1.0f + (fSubRetroOffsetY), 0.0f);
+					glTexCoord2f(1.0, 1.0); glVertex3f( 1.0f + (fSubRetroOffsetX), -1.0f + (fSubRetroOffsetY), 0.0f);
 				glEnd();
 
 				// Present Graphics to screen
@@ -2038,7 +2038,7 @@ namespace jpr
 			for (int i = 0; i < 24; i++)
 			{
 				int k = r & (1 << i) ? 255 : 0;
-				fontSprite->SetPixel(px, py, jpr::Pixel(k, k, k, k));
+				fontSprite->SetRetro(px, py, jpr::Retro(k, k, k, k));
 				if (++py == 48) { px++; py = 0; }
 			}
 		}
@@ -2058,15 +2058,15 @@ namespace jpr
 		wc.lpszMenuName = nullptr;
 		wc.hbrBackground = nullptr;
 #ifdef UNICODE
-		wc.lpszClassName = L"jpr_PIXEL_GAME_ENGINE";
+		wc.lpszClassName = L"jpr_Retro_GAME_ENGINE";
 #else
-		wc.lpszClassName = "jpr_PIXEL_GAME_ENGINE";
+		wc.lpszClassName = "jpr_Retro_GAME_ENGINE";
 #endif
 
 		RegisterClass(&wc);
 
-		nWindowWidth = (LONG)nScreenWidth * (LONG)nPixelWidth;
-		nWindowHeight = (LONG)nScreenHeight * (LONG)nPixelHeight;
+		nWindowWidth = (LONG)nScreenWidth * (LONG)nRetroWidth;
+		nWindowHeight = (LONG)nScreenHeight * (LONG)nRetroHeight;
 
 		// Define window furniture
 		DWORD dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
@@ -2100,10 +2100,10 @@ namespace jpr
 		int height = rWndRect.bottom - rWndRect.top;
 
 #ifdef UNICODE
-		jpr_hWnd = CreateWindowEx(dwExStyle, L"jpr_PIXEL_GAME_ENGINE", L"", dwStyle,
+		jpr_hWnd = CreateWindowEx(dwExStyle, L"jpr_Retro_GAME_ENGINE", L"", dwStyle,
 			nCosmeticOffset, nCosmeticOffset, width, height, NULL, NULL, GetModuleHandle(nullptr), this);
 #else
-		jpr_hWnd = CreateWindowEx(dwExStyle, "jpr_PIXEL_GAME_ENGINE", "", dwStyle,
+		jpr_hWnd = CreateWindowEx(dwExStyle, "jpr_Retro_GAME_ENGINE", "", dwStyle,
 			nCosmeticOffset, nCosmeticOffset, width, height, NULL, NULL, GetModuleHandle(nullptr), this);
 #endif
 
@@ -2143,17 +2143,17 @@ namespace jpr
 	{
 		// Create Device Context
 		glDeviceContext = GetDC(jpr_hWnd);
-		PIXELFORMATDESCRIPTOR pfd =
+		RetroFORMATDESCRIPTOR pfd =
 		{
-			sizeof(PIXELFORMATDESCRIPTOR), 1,
+			sizeof(RetroFORMATDESCRIPTOR), 1,
 			PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
 			PFD_TYPE_RGBA, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 			PFD_MAIN_PLANE, 0, 0, 0, 0
 		};
 
 		int pf = 0;
-		if (!(pf = ChoosePixelFormat(glDeviceContext, &pfd))) return false;
-		SetPixelFormat(glDeviceContext, pf, &pfd);
+		if (!(pf = ChooseRetroFormat(glDeviceContext, &pfd))) return false;
+		SetRetroFormat(glDeviceContext, pf, &pfd);
 
 		if (!(glRenderContext = wglCreateContext(glDeviceContext))) return false;
 		wglMakeCurrent(glDeviceContext, glRenderContext);
@@ -2230,7 +2230,7 @@ namespace jpr
 		jpr_SetWindowAttribs.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | FocusChangeMask | StructureNotifyMask;
 
 		// Create the window
-		jpr_Window		= XCreateWindow(jpr_Display, jpr_WindowRoot, 30, 30, nScreenWidth * nPixelWidth, nScreenHeight * nPixelHeight, 0, jpr_VisualInfo->depth, InputOutput, jpr_VisualInfo->visual, CWColormap | CWEventMask, &jpr_SetWindowAttribs);
+		jpr_Window		= XCreateWindow(jpr_Display, jpr_WindowRoot, 30, 30, nScreenWidth * nRetroWidth, nScreenHeight * nRetroHeight, 0, jpr_VisualInfo->depth, InputOutput, jpr_VisualInfo->visual, CWColormap | CWEventMask, &jpr_SetWindowAttribs);
 
 		Atom wmDelete = XInternAtom(jpr_Display, "WM_DELETE_WINDOW", true);
 		XSetWMProtocols(jpr_Display, jpr_Window, &wmDelete, 1);
