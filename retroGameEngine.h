@@ -334,9 +334,9 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		HWButton GetMouse(uint32_t b);
 		// Get the cursor and mouse X coordinate for and into the "pixel" space and position.
 		int32_t GetMouseX();
-		// Get Mouse Y coordinate in "pixel" space
+		// Get the cursor and mouse Y coordinate for and into the "pixel" space and position.
 		int32_t GetMouseY();
-		// Get Mouse Wheel Delta
+		// Get the cursor and mouse delta wheel position and space.
 		int32_t GetMouseWheel();
 
 	public: // Utility
