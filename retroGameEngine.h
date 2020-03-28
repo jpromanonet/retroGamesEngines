@@ -317,22 +317,22 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		jpr::rcode	Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen = false, bool vsync = false);
 		jpr::rcode	Start();
 
-	public: // Override Interfaces
+	public: // Override Default Interfaces
 		// Only called on application startup and it's function is to load your resources
 		virtual bool OnUserCreate();
 		// Called fpr every frame and provides the user with a time per frame value with auto-refresh
 		virtual bool OnUserUpdate(float fElapsedTime);
-		// Called once on application termination, so you can be a clean coder
+		// Only called on application termination so the user can be a good programmer and clean the code as good practices says so.
 		virtual bool OnUserDestroy();
 
-	public: // Hardware Interfaces
-		// Returns true if window is currently in focus
+	public: // Hardware Interfaces Emulation
+		// Returns true if the emulation window is currently in focus
 		bool IsFocused();
-		// Get the state of a specific keyboard button
+		// Get the state of the pressed key in the keyboard
 		HWButton GetKey(Key k);
-		// Get the state of a specific mouse button
+		// Get the state of the pressed button on the mouse.
 		HWButton GetMouse(uint32_t b);
-		// Get Mouse X coordinate in "pixel" space
+		// Get the cursor and mouse X coordinate for and into the "pixel" space and position.
 		int32_t GetMouseX();
 		// Get Mouse Y coordinate in "pixel" space
 		int32_t GetMouseY();
