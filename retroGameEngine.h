@@ -340,9 +340,9 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		int32_t GetMouseWheel();
 
 	public: // Utilities
-		// Returns the width of the screen in "spaces
+		// Returns the width of the screen in spaces
 		int32_t ScreenWidth();
-		// Returns the height of the screen in "spaces"
+		// Returns the height of the screen in spaces
 		int32_t ScreenHeight();
 		// Returns the width of the currently selected drawing target in "spaces"
 		int32_t GetDrawTargetWidth();
@@ -368,7 +368,7 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		// Offset texels by sub-Retro amount (advanced, do not use)
 		void SetSubRetroOffset(float ox, float oy);
 
-		// Draws a single Retro
+		// Draws a single space
 		virtual bool Draw(int32_t x, int32_t y, Retro p = jpr::WHITE);
 		bool Draw(const jpr::vi2d& pos, Retro p = jpr::WHITE);
 		// Draws a line from (x1,y1) to (x2,y2)
@@ -392,22 +392,21 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		// Flat fills a triangle between points (x1,y1), (x2,y2) and (x3,y3)
 		void FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Retro p = jpr::WHITE);
 		void FillTriangle(const jpr::vi2d& pos1, const jpr::vi2d& pos2, const jpr::vi2d& pos3, Retro p = jpr::WHITE);
-		// Draws an entire sprite at location (x,y)
+		// Draws an entire sprite in the location (x,y)
 		void DrawSprite(int32_t x, int32_t y, Sprite *sprite, uint32_t scale = 1);
 		void DrawSprite(const jpr::vi2d& pos, Sprite *sprite, uint32_t scale = 1);
-		// Draws an area of a sprite at location (x,y), where the
-		// selected area is (ox,oy) to (ox+w,oy+h)
+		// Draws an area of a sprite at location (x,y), where the selected area is (ox,oy) to (ox+w,oy+h)
 		void DrawPartialSprite(int32_t x, int32_t y, Sprite *sprite, int32_t ox, int32_t oy, int32_t w, int32_t h, uint32_t scale = 1);
 		void DrawPartialSprite(const jpr::vi2d& pos, Sprite *sprite, const jpr::vi2d& sourcepos, const jpr::vi2d& size, uint32_t scale = 1);
-		// Draws a single line of text
+		// Draws one single line of text
 		void DrawString(int32_t x, int32_t y, const std::string& sText, Retro col = jpr::WHITE, uint32_t scale = 1);
 		void DrawString(const jpr::vi2d& pos, const std::string& sText, Retro col = jpr::WHITE, uint32_t scale = 1);
-		// Clears entire draw target to Retro
+		// Clears entire draw target to space
 		void Clear(Retro p);
-		// Resize the primary screen sprite
+		// Resize the full primary screen sprite
 		void SetScreenSize(int w, int h);
 
-	public: // Branding
+	public: // Branding (The app name)
 		std::string sAppName;
 
 	private: // Inner mysterious workings
