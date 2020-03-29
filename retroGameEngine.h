@@ -500,7 +500,7 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 	};
 
 
-	class PGEX
+	class RGEX
 	{
 		friend class jpr::retroGameEngine;
 	protected:
@@ -1028,7 +1028,7 @@ namespace jpr
 	retroGameEngine::retroGameEngine()
 	{
 		sAppName = "Undefined";
-		jpr::PGEX::pge = this;
+		jpr::RGEX::pge = this;
 	}
 
 	jpr::rcode retroGameEngine::Construct(uint32_t screen_w, uint32_t screen_h, uint32_t Retro_w, uint32_t Retro_h, bool full_screen, bool vsync)
@@ -2325,7 +2325,7 @@ namespace jpr
 	// read from multiple locations
 	std::atomic<bool> retroGameEngine::bAtomActive{ false };
 	std::map<size_t, uint8_t> retroGameEngine::mapKeys;
-	jpr::retroGameEngine* jpr::PGEX::pge = nullptr;
+	jpr::retroGameEngine* jpr::RGEX::pge = nullptr;
 #ifdef jpr_DBG_OVERDRAW
 	int jpr::Sprite::nOverdrawCount = 0;
 #endif
