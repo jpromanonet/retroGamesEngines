@@ -328,13 +328,13 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 		// to specify the primary screen
 		void SetDrawTarget(Sprite *target);
 		// Change the pixel mode for different optimisations
-		// olc::Pixel::NORMAL = No transparency
-		// olc::Pixel::MASK   = Transparent if alpha is < 255
-		// olc::Pixel::ALPHA  = Full transparency
+		// jpr::Pixel::NORMAL = No transparency
+		// jpr::Pixel::MASK   = Transparent if alpha is < 255
+		// jpr::Pixel::ALPHA  = Full transparency
 		void SetPixelMode(Pixel::Mode m);
 		Pixel::Mode GetPixelMode();
 		// Use a custom blend function
-		void SetPixelMode(std::function<olc::Pixel(const int x, const int y, const olc::Pixel& pSource, const olc::Pixel& pDest)> pixelMode);
+		void SetPixelMode(std::function<jpr::Pixel(const int x, const int y, const jpr::Pixel& pSource, const jpr::Pixel& pDest)> pixelMode);
 		// Change the blend factor form between 0.0f to 1.0f;
 		void SetPixelBlend(float fBlend);
 		// Offset texels by sub-pixel amount (advanced, do not use)
