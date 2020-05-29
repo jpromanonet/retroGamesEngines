@@ -639,7 +639,7 @@ namespace jpr
 		std::wstring wsImageFile = ConvertS2W(sImageFile);
         Gdiplus::Bitmap *bmp = Gdiplus::Bitmap::FromFile(wsImageFile.c_str());
 		if (bmp == nullptr)
-			return olc::NO_FILE;
+			return jpr::NO_FILE;
 
 		width = bmp->GetWidth();
 		height = bmp->GetHeight();
@@ -653,7 +653,7 @@ namespace jpr
 				SetPixel(x, y, Pixel(c.GetRed(), c.GetGreen(), c.GetBlue(), c.GetAlpha()));
 			}
 		delete bmp;
-		return olc::OK;
+		return jpr::OK;
 #endif
 
 #if defined(__linux__)
