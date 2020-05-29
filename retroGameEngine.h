@@ -839,8 +839,8 @@ namespace jpr
 	{
 		u = u * width - 0.5f;
 		v = v * height - 0.5f;
-		int x = (int)floor(u); 
-		int y = (int)floor(v); 
+		int x = (int)floor(u);
+		int y = (int)floor(v);
 		float u_ratio = u - x;
 		float v_ratio = v - y;
 		float u_opposite = 1 - u_ratio;
@@ -883,7 +883,8 @@ namespace jpr
 		{
 			sResourceFile e;
 			e.nSize = (uint32_t)_gfs::file_size(file);
-			e.nOffset = 0; // Unknown at this stage
+			// Unknown at this stage
+			e.nOffset = 0; 
 			mapFiles[file] = e;
 			return true;
 		}
