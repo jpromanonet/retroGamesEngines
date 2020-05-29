@@ -1865,7 +1865,7 @@ namespace jpr
 
 #if defined(_WIN32)
 		wglDeleteContext(glRenderContext);
-		PostMessage(olc_hWnd, WM_DESTROY, 0, 0);
+		PostMessage(jpr_hWnd, WM_DESTROY, 0, 0);
 #endif
 
 #if defined (__linux__)
