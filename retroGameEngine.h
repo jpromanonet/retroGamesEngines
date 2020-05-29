@@ -625,13 +625,13 @@ namespace jpr
 			ofs.write((char*)&height, sizeof(int32_t));
 			ofs.write((char*)pColData, width*height*sizeof(uint32_t));
 			ofs.close();
-			return olc::OK;
+			return jpr::OK;
 		}
 
-		return olc::FAIL;
+		return jpr::FAIL;
 	}
 
-	olc::rcode Sprite::LoadFromFile(std::string sImageFile, olc::ResourcePack *pack)
+	jpr::rcode Sprite::LoadFromFile(std::string sImageFile, jpr::ResourcePack *pack)
 	{
 		UNUSED(pack);
 #if defined(_WIN32)
