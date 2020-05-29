@@ -521,7 +521,7 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 	~~~~~~~~~~~~~~~~~~~~
 
 	If the retroGameEngine.h is called from several sources it can cause
-	multiple definitions of objects. To prevent this, ONLY ONE of the pathways
+	multiple definitions of objects. To prevent this just only one of the pathways
 	to including this file must have jpr_PGE_APPLICATION defined before it. This prevents
 	the definitions being duplicated.
 
