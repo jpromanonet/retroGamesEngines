@@ -2109,10 +2109,10 @@ namespace jpr
 		jpr_WindowRoot	= DefaultRootWindow(jpr_Display);
 
 		// Based on the display capabilities, configure the appearance of the window
-		GLint olc_GLAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-		olc_VisualInfo	= glXChooseVisual(olc_Display, 0, olc_GLAttribs);
-		olc_ColourMap	= XCreateColormap(olc_Display, olc_WindowRoot, olc_VisualInfo->visual, AllocNone);
-		olc_SetWindowAttribs.colormap = olc_ColourMap;
+		GLint jpr_GLAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+		jpr_VisualInfo	= glXChooseVisual(jpr_Display, 0, jpr_GLAttribs);
+		jpr_ColourMap	= XCreateColormap(jpr_Display, jpr_WindowRoot, jpr_VisualInfo->visual, AllocNone);
+		jpr_SetWindowAttribs.colormap = jpr_ColourMap;
 
 		// Register which events we are interested in receiving
 		olc_SetWindowAttribs.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | FocusChangeMask | StructureNotifyMask;
