@@ -839,8 +839,8 @@ namespace jpr
 	{
 		u = u * width - 0.5f;
 		v = v * height - 0.5f;
-		int x = (int)floor(u); // cast to int rounds toward zero, not downward
-		int y = (int)floor(v); // Thanks @joshinils
+		int x = (int)floor(u); 
+		int y = (int)floor(v); 
 		float u_ratio = u - x;
 		float v_ratio = v - y;
 		float u_opposite = 1 - u_ratio;
