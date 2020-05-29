@@ -884,7 +884,7 @@ namespace jpr
 			sResourceFile e;
 			e.nSize = (uint32_t)_gfs::file_size(file);
 			// Unknown at this stage
-			e.nOffset = 0; 
+			e.nOffset = 0;
 			mapFiles[file] = e;
 			return true;
 		}
@@ -1787,7 +1787,7 @@ namespace jpr
 						nWindowWidth = gwa.width;
 						nWindowHeight = gwa.height;
 						jpr_UpdateViewport();
-						glClear(GL_COLOR_BUFFER_BIT); // Thanks Benedani!
+						glClear(GL_COLOR_BUFFER_BIT);
 					}
 					else if (xev.type == ConfigureNotify)
 					{
