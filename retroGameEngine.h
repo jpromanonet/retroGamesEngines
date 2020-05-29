@@ -1547,7 +1547,7 @@ namespace jpr
 		return nPixelMode;
 	}
 
-	void PixelGameEngine::SetPixelMode(std::function<olc::Pixel(const int x, const int y, const olc::Pixel&, const olc::Pixel&)> pixelMode)
+	void PixelGameEngine::SetPixelMode(std::function<jpr::Pixel(const int x, const int y, const jpr::Pixel&, const jpr::Pixel&)> pixelMode)
 	{
 		funcPixelMode = pixelMode;
 		nPixelMode = Pixel::Mode::CUSTOM;
@@ -1571,7 +1571,7 @@ namespace jpr
 	{ return true; }
 	//////////////////////////////////////////////////////////////////
 
-	void PixelGameEngine::olc_UpdateViewport()
+	void PixelGameEngine::jpr_UpdateViewport()
 	{
 		int32_t ww = nScreenWidth * nPixelWidth;
 		int32_t wh = nScreenHeight * nPixelHeight;
@@ -1590,20 +1590,20 @@ namespace jpr
 		nViewY = (nWindowHeight - nViewH) / 2;
 	}
 
-	void PixelGameEngine::olc_UpdateWindowSize(int32_t x, int32_t y)
+	void PixelGameEngine::jpr_UpdateWindowSize(int32_t x, int32_t y)
 	{
 		nWindowWidth = x;
 		nWindowHeight = y;
-		olc_UpdateViewport();
+		jpr_UpdateViewport();
 
 	}
 
-	void PixelGameEngine::olc_UpdateMouseWheel(int32_t delta)
+	void PixelGameEngine::jpr_UpdateMouseWheel(int32_t delta)
 	{
 		nMouseWheelDeltaCache += delta;
 	}
 
-	void PixelGameEngine::olc_UpdateMouse(int32_t x, int32_t y)
+	void PixelGameEngine::jpr_UpdateMouse(int32_t x, int32_t y)
 	{
 		// Mouse coords come in screen space
 		// But leave in pixel space
