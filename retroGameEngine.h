@@ -362,7 +362,7 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 		// selected area is (ox,oy) to (ox+w,oy+h)
 		void DrawPartialSprite(int32_t x, int32_t y, Sprite *sprite, int32_t ox, int32_t oy, int32_t w, int32_t h, uint32_t scale = 1);
 		// Draws a single line of text
-		void DrawString(int32_t x, int32_t y, std::string sText, Pixel col = olc::WHITE, uint32_t scale = 1);
+		void DrawString(int32_t x, int32_t y, std::string sText, Pixel col = jpr::WHITE, uint32_t scale = 1);
 		// Clears entire draw target to Pixel
 		void Clear(Pixel p);
 		// Resize the primary screen sprite
@@ -403,7 +403,7 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 		float		fFrameTimer = 1.0f;
 		int			nFrameCount = 0;
 		Sprite		*fontSprite = nullptr;
-		std::function<olc::Pixel(const int x, const int y, const olc::Pixel&, const olc::Pixel&)> funcPixelMode;
+		std::function<jpr::Pixel(const int x, const int y, const jpr::Pixel&, const jpr::Pixel&)> funcPixelMode;
 
 		static std::map<size_t, uint8_t> mapKeys;
 		bool		pKeyNewState[256]{ 0 };
