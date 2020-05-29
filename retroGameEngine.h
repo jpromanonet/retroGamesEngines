@@ -1970,7 +1970,7 @@ namespace jpr
 			dwExStyle = 0;
 			dwStyle = WS_VISIBLE | WS_POPUP;
 			nCosmeticOffset = 0;
-			HMONITOR hmon = MonitorFromWindow(olc_hWnd, MONITOR_DEFAULTTONEAREST);
+			HMONITOR hmon = MonitorFromWindow(jpr_hWnd, MONITOR_DEFAULTTONEAREST);
 			MONITORINFO mi = { sizeof(mi) };
 			if (!GetMonitorInfo(hmon, &mi)) return NULL;
 			nWindowWidth = mi.rcMonitor.right;
@@ -1979,7 +1979,7 @@ namespace jpr
 
 		}
 
-		olc_UpdateViewport();
+		jpr_UpdateViewport();
 
 		// Keep client size as requested
 		RECT rWndRect = { 0, 0, nWindowWidth, nWindowHeight };
@@ -1988,10 +1988,10 @@ namespace jpr
 		int height = rWndRect.bottom - rWndRect.top;
 
 #ifdef UNICODE
-		olc_hWnd = CreateWindowEx(dwExStyle, L"OLC_PIXEL_GAME_ENGINE", L"", dwStyle,
+		jpr_hWnd = CreateWindowEx(dwExStyle, L"JPR_PIXEL_GAME_ENGINE", L"", dwStyle,
 			nCosmeticOffset, nCosmeticOffset, width, height, NULL, NULL, GetModuleHandle(nullptr), this);
 #else
-		olc_hWnd = CreateWindowEx(dwExStyle, "OLC_PIXEL_GAME_ENGINE", "", dwStyle,
+		jpr_hWnd = CreateWindowEx(dwExStyle, "JPR_PIXEL_GAME_ENGINE", "", dwStyle,
 			nCosmeticOffset, nCosmeticOffset, width, height, NULL, NULL, GetModuleHandle(nullptr), this);
 #endif
 
@@ -2024,13 +2024,13 @@ namespace jpr
 		mapKeys[VK_NUMPAD5] = Key::NP5; mapKeys[VK_NUMPAD6] = Key::NP6; mapKeys[VK_NUMPAD7] = Key::NP7; mapKeys[VK_NUMPAD8] = Key::NP8; mapKeys[VK_NUMPAD9] = Key::NP9;
 		mapKeys[VK_MULTIPLY] = Key::NP_MUL; mapKeys[VK_ADD] = Key::NP_ADD; mapKeys[VK_DIVIDE] = Key::NP_DIV; mapKeys[VK_SUBTRACT] = Key::NP_SUB; mapKeys[VK_DECIMAL] = Key::NP_DECIMAL;
 
-		return olc_hWnd;
+		return jpr_hWnd;
 	}
 
-	bool PixelGameEngine::olc_OpenGLCreate()
+	bool PixelGameEngine::jpr_OpenGLCreate()
 	{
 		// Create Device Context
-		glDeviceContext = GetDC(olc_hWnd);
+		glDeviceContext = GetDC(jpr_hWnd);
 		PIXELFORMATDESCRIPTOR pfd =
 		{
 			sizeof(PIXELFORMATDESCRIPTOR), 1,
@@ -2055,7 +2055,7 @@ namespace jpr
 	}
 
 	// Windows Event Handler
-	LRESULT CALLBACK PixelGameEngine::olc_WindowEvent(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK PixelGameEngine::jpr_WindowEvent(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		static PixelGameEngine *sge;
 		switch (uMsg)
