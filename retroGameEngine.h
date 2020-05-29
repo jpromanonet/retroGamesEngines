@@ -600,7 +600,7 @@ namespace jpr
 				return jpr::OK;
 			}
 			else
-				return olc::FAIL;
+				return jpr::FAIL;
 		}
 		else
 		{
@@ -610,12 +610,12 @@ namespace jpr
 		}
 
 
-		return olc::FAIL;
+		return jpr::FAIL;
 		}
 
-	olc::rcode Sprite::SaveToPGESprFile(std::string sImageFile)
+	jpr::rcode Sprite::SaveToPGESprFile(std::string sImageFile)
 	{
-		if (pColData == nullptr) return olc::FAIL;
+		if (pColData == nullptr) return jpr::FAIL;
 
 		std::ofstream ofs;
 		ofs.open(sImageFile, std::ifstream::binary);
