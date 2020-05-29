@@ -233,7 +233,7 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 		~Sprite();
 
 	public:
-		olc::rcode LoadFromFile(std::string sImageFile, olc::ResourcePack *pack = nullptr);
+		jpr::rcode LoadFromFile(std::string sImageFile, jpr::ResourcePack *pack = nullptr);
 		olc::rcode LoadFromPGESprFile(std::string sImageFile, olc::ResourcePack *pack = nullptr);
 		olc::rcode SaveToPGESprFile(std::string sImageFile);
 
