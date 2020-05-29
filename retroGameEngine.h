@@ -2130,11 +2130,11 @@ namespace jpr
 		{
 			Atom wm_state;
 			Atom fullscreen;
-			wm_state = XInternAtom(olc_Display, "_NET_WM_STATE", False);
-			fullscreen = XInternAtom(olc_Display, "_NET_WM_STATE_FULLSCREEN", False);
+			wm_state = XInternAtom(jpr_Display, "_NET_WM_STATE", False);
+			fullscreen = XInternAtom(jpr_Display, "_NET_WM_STATE_FULLSCREEN", False);
 			XEvent xev{ 0 };
 			xev.type = ClientMessage;
-			xev.xclient.window = olc_Window;
+			xev.xclient.window = jpr_Window;
 			xev.xclient.message_type = wm_state;
 			xev.xclient.format = 32;
 			xev.xclient.data.l[0] = (bFullScreen ? 1 : 0);   // the action (0: off, 1: on, 2: toggle)
