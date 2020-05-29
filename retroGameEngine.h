@@ -2115,10 +2115,10 @@ namespace jpr
 		jpr_SetWindowAttribs.colormap = jpr_ColourMap;
 
 		// Register which events we are interested in receiving
-		olc_SetWindowAttribs.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | FocusChangeMask | StructureNotifyMask;
+		jpr_SetWindowAttribs.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | FocusChangeMask | StructureNotifyMask;
 
 		// Create the window
-		olc_Window		= XCreateWindow(olc_Display, olc_WindowRoot, 30, 30, nScreenWidth * nPixelWidth, nScreenHeight * nPixelHeight, 0, olc_VisualInfo->depth, InputOutput, olc_VisualInfo->visual, CWColormap | CWEventMask, &olc_SetWindowAttribs);
+		jpr_Window		= XCreateWindow(olc_Display, olc_WindowRoot, 30, 30, nScreenWidth * nPixelWidth, nScreenHeight * nPixelHeight, 0, olc_VisualInfo->depth, InputOutput, olc_VisualInfo->visual, CWColormap | CWEventMask, &olc_SetWindowAttribs);
 
 		Atom wmDelete = XInternAtom(olc_Display, "WM_DELETE_WINDOW", true);
 		XSetWMProtocols(olc_Display, olc_Window, &wmDelete, 1);
