@@ -1676,7 +1676,7 @@ namespace jpr
 						XGetWindowAttributes(jpr_Display, jpr_Window, &gwa);
 						nWindowWidth = gwa.width;
 						nWindowHeight = gwa.height;
-						olc_UpdateViewport();
+						jpr_UpdateViewport();
 						glClear(GL_COLOR_BUFFER_BIT); // Thanks Benedani!
 					}
 					else if (xev.type == ConfigureNotify)
@@ -1708,8 +1708,8 @@ namespace jpr
 						case 1:	pMouseNewState[0] = true; break;
 						case 2:	pMouseNewState[2] = true; break;
 						case 3:	pMouseNewState[1] = true; break;
-						case 4:	olc_UpdateMouseWheel(120); break;
-						case 5:	olc_UpdateMouseWheel(-120); break;
+						case 4:	jpr_UpdateMouseWheel(120); break;
+						case 5:	jpr_UpdateMouseWheel(-120); break;
 						default: break;
 						}
 					}
@@ -1725,7 +1725,7 @@ namespace jpr
 					}
 					else if (xev.type == MotionNotify)
 					{
-						olc_UpdateMouse(xev.xmotion.x, xev.xmotion.y);
+						jpr_UpdateMouse(xev.xmotion.x, xev.xmotion.y);
 					}
 					else if (xev.type == FocusIn)
 					{
@@ -1796,8 +1796,8 @@ namespace jpr
 				nMouseWheelDelta = nMouseWheelDeltaCache;
 				nMouseWheelDeltaCache = 0;
 
-#ifdef OLC_DBG_OVERDRAW
-				olc::Sprite::nOverdrawCount = 0;
+#ifdef JPR_DBG_OVERDRAW
+				jpr::Sprite::nOverdrawCount = 0;
 #endif
 
 				// Handle Frame Update
@@ -1825,7 +1825,7 @@ namespace jpr
 #endif
 
 #if defined(__linux__)
-				glXSwapBuffers(olc_Display, olc_Window);
+				glXSwapBuffers(jpr_Display, jpr_Window);
 #endif
 
 				// Update Title Bar
@@ -1838,14 +1838,14 @@ namespace jpr
 					std::string sTitle = "OneLoneCoder.com - Pixel Game Engine - " + sAppName + " - FPS: " + std::to_string(nFrameCount);
 #if defined(_WIN32)
 #ifdef UNICODE
-					SetWindowText(olc_hWnd, ConvertS2W(sTitle).c_str());
+					SetWindowText(jpr_hWnd, ConvertS2W(sTitle).c_str());
 #else
-					SetWindowText(olc_hWnd, sTitle.c_str());
+					SetWindowText(jpr_hWnd, sTitle.c_str());
 #endif
 #endif
 
 #if defined (__linux__)
-					XStoreName(olc_Display, olc_Window, sTitle.c_str());
+					XStoreName(jpr_Display, jpr_Window, sTitle.c_str());
 #endif
 					nFrameCount = 0;
 				}
