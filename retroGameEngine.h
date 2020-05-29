@@ -6,7 +6,7 @@
 	#define JPR_RGEX_APPLICATION
 	#include "retroGameEngine.h"
 	// Override base class with your custom functionality
-	class Example : public jpr::PixelGameEngine
+	class Example : public jpr::retroGameEngine
 	{
 	public:
 		Example()
@@ -24,7 +24,7 @@
 			// called once per frame, draws random coloured pixels
 			for (int x = 0; x < ScreenWidth(); x++)
 				for (int y = 0; y < ScreenHeight(); y++)
-					Draw(x, y, jpr::Pixel(rand() % 255, rand() % 255, rand()% 255));
+					Draw(x, y, jpr::Retro(rand() % 255, rand() % 255, rand()% 255));
 			return true;
 		}
 	};
@@ -102,7 +102,7 @@
 
 namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 {
-	struct Pixel
+	struct Retro
 	{
 		union
 		{
