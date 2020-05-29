@@ -816,10 +816,10 @@ namespace jpr
 		ClearPack();
 	}
 
-	olc::rcode ResourcePack::AddToPack(std::string sFile)
+	jpr::rcode ResourcePack::AddToPack(std::string sFile)
 	{
 		std::ifstream ifs(sFile, std::ifstream::binary);
-		if (!ifs.is_open()) return olc::FAIL;
+		if (!ifs.is_open()) return jpr::FAIL;
 
 		// Get File Size
 		std::streampos p = 0;
