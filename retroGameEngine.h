@@ -498,7 +498,7 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 #ifdef JPR_RGEX_APPLICATION
 #undef JPR_RGEX_APPLICATION
 
-namespace olc
+namespace jpr
 {
 	Pixel::Pixel()
 	{
