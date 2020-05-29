@@ -736,7 +736,7 @@ namespace jpr
 #endif
 	}
 
-	void Sprite::SetSampleMode(olc::Sprite::Mode mode)
+	void Sprite::SetSampleMode(jpr::Sprite::Mode mode)
 	{
 		modeSample = mode;
 	}
@@ -744,7 +744,7 @@ namespace jpr
 
 	Pixel Sprite::GetPixel(int32_t x, int32_t y)
 	{
-		if (modeSample == olc::Sprite::Mode::NORMAL)
+		if (modeSample == jpr::Sprite::Mode::NORMAL)
 		{
 			if (x >= 0 && x < width && y >= 0 && y < height)
 				return pColData[y*width + x];
@@ -760,7 +760,7 @@ namespace jpr
 	bool Sprite::SetPixel(int32_t x, int32_t y, Pixel p)
 	{
 
-#ifdef OLC_DBG_OVERDRAW
+#ifdef JPR_DBG_OVERDRAW
 		nOverdrawCount++;
 #endif
 
@@ -791,12 +791,12 @@ namespace jpr
 		float u_opposite = 1 - u_ratio;
 		float v_opposite = 1 - v_ratio;
 
-		olc::Pixel p1 = GetPixel(std::max(x, 0), std::max(y, 0));
-		olc::Pixel p2 = GetPixel(std::min(x + 1, (int)width - 1), std::max(y, 0));
-		olc::Pixel p3 = GetPixel(std::max(x, 0), std::min(y + 1, (int)height - 1));
-		olc::Pixel p4 = GetPixel(std::min(x + 1, (int)width - 1), std::min(y + 1, (int)height - 1));
+		jpr::Pixel p1 = GetPixel(std::max(x, 0), std::max(y, 0));
+		jpr::Pixel p2 = GetPixel(std::min(x + 1, (int)width - 1), std::max(y, 0));
+		jpr::Pixel p3 = GetPixel(std::max(x, 0), std::min(y + 1, (int)height - 1));
+		jpr::Pixel p4 = GetPixel(std::min(x + 1, (int)width - 1), std::min(y + 1, (int)height - 1));
 
-		return olc::Pixel(
+		return jpr::Pixel(
 			(uint8_t)((p1.r * u_opposite + p2.r * u_ratio) * v_opposite + (p3.r * u_opposite + p4.r * u_ratio) * v_ratio),
 			(uint8_t)((p1.g * u_opposite + p2.g * u_ratio) * v_opposite + (p3.g * u_opposite + p4.g * u_ratio) * v_ratio),
 			(uint8_t)((p1.b * u_opposite + p2.b * u_ratio) * v_opposite + (p3.b * u_opposite + p4.b * u_ratio) * v_ratio));
