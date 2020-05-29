@@ -557,7 +557,7 @@ namespace jpr
 		LoadFromFile(sImageFile);
 	}
 
-	Sprite::Sprite(std::string sImageFile, olc::ResourcePack *pack)
+	Sprite::Sprite(std::string sImageFile, jpr::ResourcePack *pack)
 	{
 		LoadFromPGESprFile(sImageFile, pack);
 	}
@@ -576,7 +576,7 @@ namespace jpr
 		if (pColData) delete pColData;
 	}
 
-	olc::rcode Sprite::LoadFromPGESprFile(std::string sImageFile, olc::ResourcePack *pack)
+	jpr::rcode Sprite::LoadFromPGESprFile(std::string sImageFile, jpr::ResourcePack *pack)
 	{
 		if (pColData) delete[] pColData;
 
@@ -588,7 +588,7 @@ namespace jpr
 			is.read((char*)pColData, width * height * sizeof(uint32_t));
 		};
 
-		// These are essentially Memory Surfaces represented by olc::Sprite
+		// These are essentially Memory Surfaces represented by jpr::Sprite
 		// which load very fast, but are completely uncompressed
 		if (pack == nullptr)
 		{
@@ -597,7 +597,7 @@ namespace jpr
 			if (ifs.is_open())
 			{
 				ReadData(ifs);
-				return olc::OK;
+				return jpr::OK;
 			}
 			else
 				return olc::FAIL;
