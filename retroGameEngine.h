@@ -442,10 +442,10 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 
 #if defined(_WIN32)
 		// Windows specific window handling
-		HWND olc_hWnd = nullptr;
-		HWND olc_WindowCreate();
+		HWND jpr_hWnd = nullptr;
+		HWND jpr_WindowCreate();
 		std::wstring wsAppName;
-		static LRESULT CALLBACK olc_WindowEvent(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+		static LRESULT CALLBACK jpr_WindowEvent(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif
 
 #if defined(__linux__)
