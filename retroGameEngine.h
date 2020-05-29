@@ -1871,8 +1871,8 @@ namespace jpr
 #if defined (__linux__)
 		glXMakeCurrent(jpr_Display, None, NULL);
 		glXDestroyContext(jpr_Display, glDeviceContext);
-		XDestroyWindow(olc_Display, olc_Window);
-		XCloseDisplay(olc_Display);
+		XDestroyWindow(jpr_Display, jpr_Window);
+		XCloseDisplay(jpr_Display);
 #endif
 
 	}
@@ -1893,7 +1893,7 @@ namespace jpr
 #endif
 
 
-	void PixelGameEngine::olc_ConstructFontSheet()
+	void PixelGameEngine::jpr_ConstructFontSheet()
 	{
 		std::string data;
 		data += "?Q`0001oOch0o01o@F40o0<AGD4090LAGD<090@A7ch0?00O7Q`0600>00000000";
@@ -1913,7 +1913,7 @@ namespace jpr
 		data += "O`000P08Od400g`<3V=P0G`673IP0`@3>1`00P@6O`P00g`<O`000GP800000000";
 		data += "?P9PL020O`<`N3R0@E4HC7b0@ET<ATB0@@l6C4B0O`H3N7b0?P01L3R000000020";
 
-		fontSprite = new olc::Sprite(128, 48);
+		fontSprite = new jpr::Sprite(128, 48);
 		int px = 0, py = 0;
 		for (int b = 0; b < 1024; b += 4)
 		{
@@ -1926,29 +1926,29 @@ namespace jpr
 			for (int i = 0; i < 24; i++)
 			{
 				int k = r & (1 << i) ? 255 : 0;
-				fontSprite->SetPixel(px, py, olc::Pixel(k, k, k, k));
+				fontSprite->SetPixel(px, py, jpr::Pixel(k, k, k, k));
 				if (++py == 48) { px++; py = 0; }
 			}
 		}
 	}
 
 #if defined(_WIN32)
-	HWND PixelGameEngine::olc_WindowCreate()
+	HWND PixelGameEngine::jpr_WindowCreate()
 	{
 		WNDCLASS wc;
 		wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 		wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 		wc.hInstance = GetModuleHandle(nullptr);
-		wc.lpfnWndProc = olc_WindowEvent;
+		wc.lpfnWndProc = jpr_WindowEvent;
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = 0;
 		wc.lpszMenuName = nullptr;
 		wc.hbrBackground = nullptr;
 #ifdef UNICODE
-		wc.lpszClassName = L"OLC_PIXEL_GAME_ENGINE";
+		wc.lpszClassName = L"JPR_PIXEL_GAME_ENGINE";
 #else
-		wc.lpszClassName = "OLC_PIXEL_GAME_ENGINE";
+		wc.lpszClassName = "JPR_PIXEL_GAME_ENGINE";
 #endif
 
 		RegisterClass(&wc);
