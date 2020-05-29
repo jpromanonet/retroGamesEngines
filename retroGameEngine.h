@@ -1629,7 +1629,7 @@ namespace jpr
 	void PixelGameEngine::EngineThread()
 	{
 		// Start OpenGL, the context is owned by the game thread
-		olc_OpenGLCreate();
+		jpr_OpenGLCreate();
 
 		// Create Screen Texture - disable filtering
 		glEnable(GL_TEXTURE_2D);
@@ -1667,13 +1667,13 @@ namespace jpr
 				// same thread that OpenGL was created so we dont
 				// need to worry too much about multithreading with X11
 				XEvent xev;
-				while (XPending(olc_Display))
+				while (XPending(jpr_Display))
 				{
-					XNextEvent(olc_Display, &xev);
+					XNextEvent(jpr_Display, &xev);
 					if (xev.type == Expose)
 					{
 						XWindowAttributes gwa;
-						XGetWindowAttributes(olc_Display, olc_Window, &gwa);
+						XGetWindowAttributes(jpr_Display, jpr_Window, &gwa);
 						nWindowWidth = gwa.width;
 						nWindowHeight = gwa.height;
 						olc_UpdateViewport();
