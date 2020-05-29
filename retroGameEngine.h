@@ -840,13 +840,13 @@ namespace jpr
 
 		// Add To Map
 		mapFiles[sFile] = e;
-		return olc::OK;
+		return jpr::OK;
 	}
 
-	olc::rcode ResourcePack::SavePack(std::string sFile)
+	jpr::rcode ResourcePack::SavePack(std::string sFile)
 	{
 		std::ofstream ofs(sFile, std::ofstream::binary);
-		if (!ofs.is_open()) return olc::FAIL;
+		if (!ofs.is_open()) return jpr::FAIL;
 
 		// 1) Write Map
 		size_t nMapSize = mapFiles.size();
@@ -884,13 +884,13 @@ namespace jpr
 		}
 		ofs.close();
 
-		return olc::OK;
+		return jpr::OK;
 	}
 
-	olc::rcode ResourcePack::LoadPack(std::string sFile)
+	jpr::rcode ResourcePack::LoadPack(std::string sFile)
 	{
 		std::ifstream ifs(sFile, std::ifstream::binary);
-		if (!ifs.is_open()) return olc::FAIL;
+		if (!ifs.is_open()) return jpr::FAIL;
 
 		// 1) Read Map
 		uint32_t nMapEntries;
@@ -922,15 +922,15 @@ namespace jpr
 		}
 
 		ifs.close();
-		return olc::OK;
+		return jpr::OK;
 	}
 
-	olc::ResourcePack::sEntry ResourcePack::GetStreamBuffer(std::string sFile)
+	jpr::ResourcePack::sEntry ResourcePack::GetStreamBuffer(std::string sFile)
 	{
 		return mapFiles[sFile];
 	}
 
-	olc::rcode ResourcePack::ClearPack()
+	jpr::rcode ResourcePack::ClearPack()
 	{
 		for (auto &e : mapFiles)
 		{
@@ -939,7 +939,7 @@ namespace jpr
 		}
 
 		mapFiles.clear();
-		return olc::OK;
+		return jpr::OK;
 	}
 
 	//==========================================================
@@ -947,10 +947,10 @@ namespace jpr
 	PixelGameEngine::PixelGameEngine()
 	{
 		sAppName = "Undefined";
-		olc::PGEX::pge = this;
+		jpr::PGEX::pge = this;
 	}
 
-	olc::rcode PixelGameEngine::Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen, bool vsync)
+	jpr::rcode PixelGameEngine::Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen, bool vsync)
 	{
 		nScreenWidth = screen_w;
 		nScreenHeight = screen_h;
@@ -963,18 +963,18 @@ namespace jpr
 		fPixelY = 2.0f / (float)(nScreenHeight);
 
 		if (nPixelWidth == 0 || nPixelHeight == 0 || nScreenWidth == 0 || nScreenHeight == 0)
-			return olc::FAIL;
+			return jpr::FAIL;
 
 #if defined(_WIN32) && defined(UNICODE) && !defined(__MINGW32__)
 		wsAppName = ConvertS2W(sAppName);
 #endif
 		// Load the default font sheet
-		olc_ConstructFontSheet();
+		jpr_ConstructFontSheet();
 
 		// Create a sprite that represents the primary drawing target
 		pDefaultDrawTarget = new Sprite(nScreenWidth, nScreenHeight);
 		SetDrawTarget(nullptr);
-		return olc::OK;
+		return jpr::OK;
 	}
 
 
@@ -992,18 +992,18 @@ namespace jpr
 #endif
 
 #if defined(__linux__)
-		glXSwapBuffers(olc_Display, olc_Window);
+		glXSwapBuffers(jpr_Display, jpr_Window);
 #endif
 
 		glClear(GL_COLOR_BUFFER_BIT);
-		olc_UpdateViewport();
+		jpr_UpdateViewport();
 	}
 
-	olc::rcode PixelGameEngine::Start()
+	jpr::rcode PixelGameEngine::Start()
 	{
 		// Construct the window
-		if (!olc_WindowCreate())
-			return olc::FAIL;
+		if (!jpr_WindowCreate())
+			return jpr::FAIL;
 
 		// Start the thread
 		bAtomActive = true;
@@ -1021,7 +1021,7 @@ namespace jpr
 
 		// Wait for thread to be exited
 		t.join();
-		return olc::OK;
+		return jpr::OK;
 	}
 
 	void PixelGameEngine::SetDrawTarget(Sprite *target)
