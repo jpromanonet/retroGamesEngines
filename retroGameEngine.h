@@ -664,7 +664,7 @@ namespace jpr
 		png_infop info;
 
 		FILE *f = fopen(sImageFile.c_str(), "rb");
-		if (!f) return olc::NO_FILE;
+		if (!f) return jpr::NO_FILE;
 
 		png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 		if (!png) goto fail_load;
@@ -725,14 +725,14 @@ namespace jpr
 		}
 
 		fclose(f);
-		return olc::OK;
+		return jpr::OK;
 
 	fail_load:
 		width = 0;
 		height = 0;
 		fclose(f);
 		pColData = nullptr;
-		return olc::FAIL;
+		return jpr::FAIL;
 #endif
 	}
 
