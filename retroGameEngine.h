@@ -2236,7 +2236,7 @@ namespace jpr
 		XMapWindow(jpr_Display, jpr_Window);
 		XStoreName(jpr_Display, jpr_Window, "jpromanonet.net - retroGameEngine");
 
-		if (bFullScreen) // Thanks DragonEye, again :D
+		if (bFullScreen)
 		{
 			Atom wm_state;
 			Atom fullscreen;
