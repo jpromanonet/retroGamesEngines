@@ -436,8 +436,8 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 		void jpr_UpdateMouseWheel(int32_t delta);
 		void jpr_UpdateWindowSize(int32_t x, int32_t y);
 		void jpr_UpdateViewport();
-		bool olc_OpenGLCreate();
-		void olc_ConstructFontSheet();
+		bool jpr_OpenGLCreate();
+		void jpr_ConstructFontSheet();
 
 
 #if defined(_WIN32)
