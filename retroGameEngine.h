@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
-// Let's change all olc, Pixel, PGE and PIXEL
+// Let's change all olc, Pixel, PGE, PGEX and PIXEL
 
 /* Example Usage (main.cpp)
 	#define JPR_RGEX_APPLICATION
@@ -451,12 +451,12 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 #if defined(__linux__)
 		// Non-Windows specific window handling
 		Display*				jpr_Display = nullptr;
-		Window					olc_WindowRoot;
-		Window					olc_Window;
-		XVisualInfo*            olc_VisualInfo;
-		Colormap                olc_ColourMap;
-		XSetWindowAttributes    olc_SetWindowAttribs;
-		Display*				olc_WindowCreate();
+		Window					jpr_WindowRoot;
+		Window					jpr_Window;
+		XVisualInfo*            jpr_VisualInfo;
+		Colormap                jpr_ColourMap;
+		XSetWindowAttributes    jpr_SetWindowAttribs;
+		Display*				jpr_WindowCreate();
 #endif
 
 	};
@@ -464,7 +464,7 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 
 	class PGEX
 	{
-		friend class olc::PixelGameEngine;
+		friend class jpr::PixelGameEngine;
 	protected:
 		static PixelGameEngine* pge;
 	};
@@ -472,7 +472,7 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 	//=============================================================
 }
 
-#endif // OLC_PGE_DEF
+#endif // JPR_PGE_DEF
 
 
 
