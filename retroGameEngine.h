@@ -2184,9 +2184,9 @@ namespace jpr
 		return jpr_Display;
 	}
 
-	bool PixelGameEngine::olc_OpenGLCreate()
+	bool PixelGameEngine::jpr_OpenGLCreate()
 	{
-		glDeviceContext = glXCreateContext(olc_Display, olc_VisualInfo, nullptr, GL_TRUE);
+		glDeviceContext = glXCreateContext(jpr_Display, jpr_VisualInfo, nullptr, GL_TRUE);
 		glXMakeCurrent(olc_Display, olc_Window, glDeviceContext);
 
 		XWindowAttributes gwa;
