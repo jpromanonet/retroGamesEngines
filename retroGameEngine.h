@@ -2106,7 +2106,7 @@ namespace jpr
 
 		// Grab the deafult display and window
 		jpr_Display		= XOpenDisplay(NULL);
-		olc_WindowRoot	= DefaultRootWindow(olc_Display);
+		jpr_WindowRoot	= DefaultRootWindow(jpr_Display);
 
 		// Based on the display capabilities, configure the appearance of the window
 		GLint olc_GLAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
