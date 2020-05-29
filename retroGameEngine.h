@@ -450,7 +450,7 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 
 #if defined(__linux__)
 		// Non-Windows specific window handling
-		Display*				olc_Display = nullptr;
+		Display*				jpr_Display = nullptr;
 		Window					olc_WindowRoot;
 		Window					olc_Window;
 		XVisualInfo*            olc_VisualInfo;
