@@ -73,7 +73,8 @@
 	static wglSwapInterval_t *wglSwapInterval;
 #endif
 
-#ifdef __linux__ // LINUX specific includes ==============================================
+// LINUX specific includes
+#ifdef __linux__
 	#include <GL/gl.h>
 	#include <GL/glx.h>
 	#include <X11/X.h>
@@ -117,12 +118,12 @@
 #endif
 
 #if defined(USE_EXPERIMENTAL_FS)
-	// C++14
+	// C++ 14
 	#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 	#include <experimental/filesystem>
 	namespace _gfs = std::experimental::filesystem::v1;
 #else
-	// C++17
+	// C++ 17
 	#include <filesystem>
 	namespace _gfs = std::filesystem;
 #endif
@@ -214,7 +215,7 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 	typedef v2d_generic<float> vf2d;
 	typedef v2d_generic<double> vd2d;
 
-	//=============================================================
+	//=======================================================================================================================================================================================
 
 	struct HWButton
 	{
@@ -223,7 +224,7 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		bool bHeld = false;		// Set true for all frames between pressed and released events
 	};
 
-	//=============================================================
+	//=======================================================================================================================================================================================
 
 	struct ResourceBuffer : public std::streambuf
 	{
@@ -249,7 +250,7 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		std::string makeposix(const std::string& path);
 	};
 
-	//=============================================================
+	//=======================================================================================================================================================================================
 
 	// An structure like a bitmap that stores a 2D array of spaces on the memory for screen
 	class Sprite
@@ -290,7 +291,7 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 
 	};
 
-	//=============================================================
+	//=======================================================================================================================================================================================
 
 	enum Key
 	{
@@ -306,7 +307,7 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 	};
 
 
-	//=============================================================
+	//=======================================================================================================================================================================================
 
 	class retroGameEngine
 	{
@@ -567,15 +568,15 @@ namespace jpr
 
 #if defined(_WIN32)
 	std::wstring ConvertS2W(std::string s)
-	{		
+	{
 #ifdef __MINGW32__
 		wchar_t *buffer = new wchar_t[s.length() + 1];
 		mbstowcs(buffer, s.c_str(), s.length());
-		buffer[s.length()] = L'\0';		
+		buffer[s.length()] = L'\0';
 #else
 		int count = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, NULL, 0);
 		wchar_t* buffer = new wchar_t[count];
-		MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, buffer, count);		
+		MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, buffer, count);
 #endif
 		std::wstring w(buffer);
 		delete[] buffer;
@@ -689,7 +690,7 @@ namespace jpr
 			// Load sprite from file
 			bmp = Gdiplus::Bitmap::FromFile(ConvertS2W(sImageFile).c_str());
 		}
-		
+
 		if (bmp == nullptr) return jpr::NO_FILE;
 		width = bmp->GetWidth();
 		height = bmp->GetHeight();
@@ -862,7 +863,7 @@ namespace jpr
 	Retro* Sprite::GetData() { return pColData; }
 
 	//==========================================================
-	// Resource Packs - Allows you to store files in one large 
+	// Resource Packs - Allows you to store files in one large
 	// scrambled file
 
 
@@ -878,14 +879,14 @@ namespace jpr
 
 	bool ResourcePack::AddFile(const std::string& sFile)
 	{
-		
+
 		const std::string file = makeposix(sFile);
 
 		if (_gfs::exists(file))
 		{
 			sResourceFile e;
 			e.nSize = (uint32_t)_gfs::file_size(file);
-			e.nOffset = 0; // Unknown at this stage			
+			e.nOffset = 0; // Unknown at this stage
 			mapFiles[file] = e;
 			return true;
 		}
@@ -901,7 +902,7 @@ namespace jpr
 		// 1) Read Scrambled index
 		uint32_t nIndexSize = 0;
 		baseFile.read((char*)&nIndexSize, sizeof(uint32_t));
-		
+
 		std::string buffer(nIndexSize, ' ');
 		for (uint32_t j = 0; j < nIndexSize; j++)
 			buffer[j] = baseFile.get();
@@ -973,7 +974,7 @@ namespace jpr
 			ofs.write(vBuffer.data(), e.second.nSize);
 			offset += e.second.nSize;
 		}
-		
+
 		// 3) Scramble Index
 		std::stringstream oss;
 		oss.write((char*)&nMapSize, sizeof(uint32_t));
@@ -1487,9 +1488,9 @@ namespace jpr
 				else              t2x += signx2;
 			}
 		next2:
-			if (minx>t1x) minx = t1x; 
+			if (minx>t1x) minx = t1x;
 			if (minx>t2x) minx = t2x;
-			if (maxx<t1x) maxx = t1x; 
+			if (maxx<t1x) maxx = t1x;
 			if (maxx<t2x) maxx = t2x;
 			drawline(minx, maxx, y);    // Draw line from min to max points found on the y
 										// Now increase y
@@ -1548,7 +1549,7 @@ namespace jpr
 
 			if (minx>t1x) minx = t1x;
 			if (minx>t2x) minx = t2x;
-			if (maxx<t1x) maxx = t1x; 
+			if (maxx<t1x) maxx = t1x;
 			if (maxx<t2x) maxx = t2x;
 			drawline(minx, maxx, y);
 			if (!changed1) t1x += signx1;
@@ -2315,7 +2316,7 @@ namespace jpr
 		}
 
 		if (glSwapIntervalEXT != nullptr && !bEnableVSYNC)
-			glSwapIntervalEXT(jpr_Display, jpr_Window, 0);		
+			glSwapIntervalEXT(jpr_Display, jpr_Window, 0);
 		return true;
 	}
 
