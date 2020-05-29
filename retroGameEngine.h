@@ -432,7 +432,7 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 		static std::atomic<bool> bAtomActive;
 
 		// Common initialisation functions
-		void olc_UpdateMouse(int32_t x, int32_t y);
+		void jpr_UpdateMouse(int32_t x, int32_t y);
 		void olc_UpdateMouseWheel(int32_t delta);
 		void olc_UpdateWindowSize(int32_t x, int32_t y);
 		void olc_UpdateViewport();
