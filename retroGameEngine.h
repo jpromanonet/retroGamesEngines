@@ -234,8 +234,8 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 
 	public:
 		jpr::rcode LoadFromFile(std::string sImageFile, jpr::ResourcePack *pack = nullptr);
-		olc::rcode LoadFromPGESprFile(std::string sImageFile, olc::ResourcePack *pack = nullptr);
-		olc::rcode SaveToPGESprFile(std::string sImageFile);
+		jpr::rcode LoadFromPGESprFile(std::string sImageFile, jpr::ResourcePack *pack = nullptr);
+		jpr::rcode SaveToPGESprFile(std::string sImageFile);
 
 	public:
 		int32_t width = 0;
@@ -243,7 +243,7 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 		enum Mode { NORMAL, PERIODIC };
 
 	public:
-		void SetSampleMode(olc::Sprite::Mode mode = olc::Sprite::Mode::NORMAL);
+		void SetSampleMode(jpr::Sprite::Mode mode = jpr::Sprite::Mode::NORMAL);
 		Pixel GetPixel(int32_t x, int32_t y);
 		bool  SetPixel(int32_t x, int32_t y, Pixel p);
 
