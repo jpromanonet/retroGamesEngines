@@ -255,7 +255,7 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 		Pixel *pColData = nullptr;
 		Mode modeSample = Mode::NORMAL;
 
-#ifdef OLC_DBG_OVERDRAW
+#ifdef JPR_DBG_OVERDRAW
 	public:
 		static int nOverdrawCount;
 #endif
@@ -286,8 +286,8 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 		PixelGameEngine();
 
 	public:
-		olc::rcode	Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen = false, bool vsync = false);
-		olc::rcode	Start();
+		jpr::rcode	Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen = false, bool vsync = false);
+		jpr::rcode	Start();
 
 	public: // Override Interfaces
 		// Called once on application startup, use to load your resources
