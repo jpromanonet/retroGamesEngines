@@ -2141,15 +2141,15 @@ namespace jpr
 			xev.xclient.data.l[1] = fullscreen;             // first property to alter
 			xev.xclient.data.l[2] = 0;                      // second property to alter
 			xev.xclient.data.l[3] = 0;                      // source indication
-			XMapWindow(olc_Display, olc_Window);
-			XSendEvent(olc_Display, DefaultRootWindow(olc_Display), False,
+			XMapWindow(jpr_Display, jpr_Window);
+			XSendEvent(jpr_Display, DefaultRootWindow(jpr_Display), False,
 				SubstructureRedirectMask | SubstructureNotifyMask, &xev);
-			XFlush(olc_Display);
+			XFlush(jpr_Display);
 			XWindowAttributes gwa;
-			XGetWindowAttributes(olc_Display, olc_Window, &gwa);
+			XGetWindowAttributes(jpr_Display, jpr_Window, &gwa);
 			nWindowWidth = gwa.width;
 			nWindowHeight = gwa.height;
-			olc_UpdateViewport();
+			jpr_UpdateViewport();
 		}
 
 		// Create Keyboard Mapping
@@ -2181,7 +2181,7 @@ namespace jpr
 		mapKeys[XK_KP_5] = Key::NP5; mapKeys[XK_KP_6] = Key::NP6; mapKeys[XK_KP_7] = Key::NP7; mapKeys[XK_KP_8] = Key::NP8; mapKeys[XK_KP_9] = Key::NP9;
 		mapKeys[XK_KP_Multiply] = Key::NP_MUL; mapKeys[XK_KP_Add] = Key::NP_ADD; mapKeys[XK_KP_Divide] = Key::NP_DIV; mapKeys[XK_KP_Subtract] = Key::NP_SUB; mapKeys[XK_KP_Decimal] = Key::NP_DECIMAL;
 
-		return olc_Display;
+		return jpr_Display;
 	}
 
 	bool PixelGameEngine::olc_OpenGLCreate()
