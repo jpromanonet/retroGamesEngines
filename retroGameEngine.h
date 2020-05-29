@@ -742,7 +742,7 @@ namespace jpr
 				row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png, info));
 			}
 			png_read_image(png, row_pointers);
-			////////////////////////////////////////////////////////////////////////////
+			//====================================================================================================================
 			// Create sprite array
 			pColData = new Retro[width * height];
 			// Iterate through image rows, converting into sprite format
