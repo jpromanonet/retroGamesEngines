@@ -1799,7 +1799,7 @@ namespace jpr
 					{
 						KeySym sym = XLookupKeysym(&xev.xkey, 0);
 						pKeyNewState[mapKeys[sym]] = true;
-						XKeyEvent *e = (XKeyEvent *)&xev; 
+						XKeyEvent *e = (XKeyEvent *)&xev;
 						XLookupString(e, NULL, 0, &sym, NULL);
 						pKeyNewState[mapKeys[sym]] = true;
 					}
@@ -1988,7 +1988,7 @@ namespace jpr
 	}
 
 #if defined (_WIN32)
-	// Thanks @MaGetzUb for this, which allows sprites to be defined
+	// Allows sprites to be defined
 	// at construction, by initialising the GDI subsystem
 	static class GDIPlusStartup
 	{
