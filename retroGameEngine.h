@@ -2105,7 +2105,7 @@ namespace jpr
 		XInitThreads();
 
 		// Grab the deafult display and window
-		olc_Display		= XOpenDisplay(NULL);
+		jpr_Display		= XOpenDisplay(NULL);
 		olc_WindowRoot	= DefaultRootWindow(olc_Display);
 
 		// Based on the display capabilities, configure the appearance of the window
