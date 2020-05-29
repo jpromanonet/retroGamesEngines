@@ -2067,17 +2067,17 @@ namespace jpr
 			uint16_t y = (lParam >> 16) & 0xFFFF;
 			int16_t ix = *(int16_t*)&x;
 			int16_t iy = *(int16_t*)&y;
-			sge->olc_UpdateMouse(ix, iy);
+			sge->jpr_UpdateMouse(ix, iy);
 			return 0;
 		}
 		case WM_SIZE:
 		{
-			sge->olc_UpdateWindowSize(lParam & 0xFFFF, (lParam >> 16) & 0xFFFF);
+			sge->jpr_UpdateWindowSize(lParam & 0xFFFF, (lParam >> 16) & 0xFFFF);
 			return 0;
 		}
 		case WM_MOUSEWHEEL:
 		{
-			sge->olc_UpdateMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam));
+			sge->jpr_UpdateMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam));
 			return 0;
 		}
 		case WM_MOUSELEAVE: sge->bHasMouseFocus = false;							return 0;
@@ -2100,7 +2100,7 @@ namespace jpr
 
 #if defined(__linux__)
 	// Do the Linux stuff!
-	Display* PixelGameEngine::olc_WindowCreate()
+	Display* PixelGameEngine::jpr_WindowCreate()
 	{
 		XInitThreads();
 
