@@ -1281,8 +1281,8 @@ namespace jpr
 		Pixel* m = GetDrawTarget()->GetData();
 		for (int i = 0; i < pixels; i++)
 			m[i] = p;
-#ifdef OLC_DBG_OVERDRAW
-		olc::Sprite::nOverdrawCount += pixels;
+#ifdef JPR_DBG_OVERDRAW
+		jpr::Sprite::nOverdrawCount += pixels;
 #endif
 	}
 
