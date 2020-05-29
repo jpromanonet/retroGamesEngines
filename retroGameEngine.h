@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
-// Let's change all olc, Pixel, PGE, PGEX and PIXEL
+// Let's change all Pixel, PGE, PGEX and PIXEL
 
 /* Example Usage (main.cpp)
 	#define JPR_RGEX_APPLICATION
@@ -2187,10 +2187,10 @@ namespace jpr
 	bool PixelGameEngine::jpr_OpenGLCreate()
 	{
 		glDeviceContext = glXCreateContext(jpr_Display, jpr_VisualInfo, nullptr, GL_TRUE);
-		glXMakeCurrent(olc_Display, olc_Window, glDeviceContext);
+		glXMakeCurrent(jpr_Display, jpr_Window, glDeviceContext);
 
 		XWindowAttributes gwa;
-		XGetWindowAttributes(olc_Display, olc_Window, &gwa);
+		XGetWindowAttributes(jpr_Display, jpr_Window, &gwa);
 		glViewport(0, 0, gwa.width, gwa.height);
 
 		glSwapIntervalEXT = nullptr;
@@ -2204,7 +2204,7 @@ namespace jpr
 		}
 
 		if (glSwapIntervalEXT != nullptr && !bEnableVSYNC)
-			glSwapIntervalEXT(olc_Display, olc_Window, 0);
+			glSwapIntervalEXT(jpr_Display, jpr_Window, 0);
 		return true;
 	}
 
@@ -2214,9 +2214,9 @@ namespace jpr
 	// read from multiple locations
 	std::atomic<bool> PixelGameEngine::bAtomActive{ false };
 	std::map<size_t, uint8_t> PixelGameEngine::mapKeys;
-	olc::PixelGameEngine* olc::PGEX::pge = nullptr;
-#ifdef OLC_DBG_OVERDRAW
-	int olc::Sprite::nOverdrawCount = 0;
+	jpr::PixelGameEngine* jpr::PGEX::pge = nullptr;
+#ifdef JPR_DBG_OVERDRAW
+	int jpr::Sprite::nOverdrawCount = 0;
 #endif
 	//=============================================================
 }
