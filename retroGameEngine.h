@@ -1,5 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
+// Let's change all olc, Pixel, PGE and PIXEL
+
 /* Example Usage (main.cpp)
 	#define JPR_RGEX_APPLICATION
 	#include "retroGameEngine.h"
@@ -35,8 +37,8 @@
 	}
 */
 
-#ifndef OLC_PGE_DEF
-#define OLC_PGE_DEF
+#ifndef JPR_PGE_DEF
+#define JPR_PGE_DEF
 
 #if defined(_WIN32) // WINDOWS specific includes ==============================================
 	// Link to libraries
@@ -98,7 +100,7 @@
 #undef max
 #define UNUSED(x) (void)(x)
 
-namespace olc // All OneLoneCoder stuff will now exist in the "olc" namespace
+namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 {
 	struct Pixel
 	{
@@ -203,15 +205,15 @@ namespace olc // All OneLoneCoder stuff will now exist in the "olc" namespace
 		};
 
 	public:
-		olc::rcode AddToPack(std::string sFile);
+		jpr::rcode AddToPack(std::string sFile);
 
 	public:
-		olc::rcode SavePack(std::string sFile);
-		olc::rcode LoadPack(std::string sFile);
-		olc::rcode ClearPack();
+		jpr::rcode SavePack(std::string sFile);
+		jpr::rcode LoadPack(std::string sFile);
+		jpr::rcode ClearPack();
 
 	public:
-		olc::ResourcePack::sEntry GetStreamBuffer(std::string sFile);
+		jpr::ResourcePack::sEntry GetStreamBuffer(std::string sFile);
 
 	private:
 
@@ -226,7 +228,7 @@ namespace olc // All OneLoneCoder stuff will now exist in the "olc" namespace
 	public:
 		Sprite();
 		Sprite(std::string sImageFile);
-		Sprite(std::string sImageFile, olc::ResourcePack *pack);
+		Sprite(std::string sImageFile, jpr::ResourcePack *pack);
 		Sprite(int32_t w, int32_t h);
 		~Sprite();
 
