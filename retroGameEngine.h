@@ -2173,7 +2173,7 @@ namespace jpr
 		case WM_CREATE:		sge = (retroGameEngine*)((LPCREATESTRUCT)lParam)->lpCreateParams;	return 0;
 		case WM_MOUSEMOVE:
 		{
-			uint16_t x = lParam & 0xFFFF;				// Thanks @ForAbby (Discord)
+			uint16_t x = lParam & 0xFFFF;
 			uint16_t y = (lParam >> 16) & 0xFFFF;
 			int16_t ix = *(int16_t*)&x;
 			int16_t iy = *(int16_t*)&y;
