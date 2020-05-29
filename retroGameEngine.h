@@ -522,13 +522,13 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 
 	If the retroGameEngine.h is called from several sources it can cause
 	multiple definitions of objects. To prevent this just only one of the pathways
-	to including this file must have jpr_PGE_APPLICATION defined before it. 
-	
+	to including this file must have jpr_PGE_APPLICATION defined before it.
+
 	This preventsthe definitions being duplicated.
 
 	If all else fails, create a file called "retroGameEngine.cpp" with the following
-	two lines. 
-	
+	two lines.
+
 	Then you can just #include "retroGameEngine.h" as normal without worrying
 	about defining things. Dont forget to include that cpp file as part of your build!
 
@@ -567,7 +567,7 @@ namespace jpr
 		return n != p.n;
 	}
 
-	//==========================================================
+	//==============================================================================================================================================================================
 
 #if defined(_WIN32)
 	std::wstring ConvertS2W(std::string s)
@@ -711,12 +711,6 @@ namespace jpr
 #endif
 
 #if defined(__linux__)
-		////////////////////////////////////////////////////////////////////////////
-		// Use libpng, Thanks to Guillaume Cottenceau
-		// https://gist.github.com/niw/5963798
-
-		// Also reading png from streams
-		// http://www.piko3d.net/tutorials/libpng-tutorial-loading-png-files-from-streams/
 
 		png_structp png;
 		png_infop info;
