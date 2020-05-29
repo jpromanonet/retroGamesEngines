@@ -2118,13 +2118,13 @@ namespace jpr
 		jpr_SetWindowAttribs.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | FocusChangeMask | StructureNotifyMask;
 
 		// Create the window
-		jpr_Window		= XCreateWindow(olc_Display, olc_WindowRoot, 30, 30, nScreenWidth * nPixelWidth, nScreenHeight * nPixelHeight, 0, olc_VisualInfo->depth, InputOutput, olc_VisualInfo->visual, CWColormap | CWEventMask, &olc_SetWindowAttribs);
+		jpr_Window		= XCreateWindow(jpr_Display, jpr_WindowRoot, 30, 30, nScreenWidth * nPixelWidth, nScreenHeight * nPixelHeight, 0, jpr_VisualInfo->depth, InputOutput, jpr_VisualInfo->visual, CWColormap | CWEventMask, &jpr_SetWindowAttribs);
 
-		Atom wmDelete = XInternAtom(olc_Display, "WM_DELETE_WINDOW", true);
-		XSetWMProtocols(olc_Display, olc_Window, &wmDelete, 1);
+		Atom wmDelete = XInternAtom(jpr_Display, "WM_DELETE_WINDOW", true);
+		XSetWMProtocols(jpr_Display, jpr_Window, &wmDelete, 1);
 
-		XMapWindow(olc_Display, olc_Window);
-		XStoreName(olc_Display, olc_Window, "OneLoneCoder.com - Pixel Game Engine");
+		XMapWindow(jpr_Display, jpr_Window);
+		XStoreName(jpr_Display, jpr_Window, "jpromano.net - Pixel Game Engine");
 
 		if (bFullScreen) // Thanks DragonEye, again :D
 		{
