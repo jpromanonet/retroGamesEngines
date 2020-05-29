@@ -1869,8 +1869,8 @@ namespace jpr
 #endif
 
 #if defined (__linux__)
-		glXMakeCurrent(olc_Display, None, NULL);
-		glXDestroyContext(olc_Display, glDeviceContext);
+		glXMakeCurrent(jpr_Display, None, NULL);
+		glXDestroyContext(jpr_Display, glDeviceContext);
 		XDestroyWindow(olc_Display, olc_Window);
 		XCloseDisplay(olc_Display);
 #endif
