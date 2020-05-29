@@ -1,13 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /* Example Usage (main.cpp)
-
-	#define jpr_PGE_APPLICATION
+	#define JPR_RGEX_APPLICATION
 	#include "retroGameEngine.h"
-
-	// Override base class with the custom functionality that you want
-
-	class Example : public jpr::retroGameEngine
+	// Override base class with your custom functionality
+	class Example : public jpr::PixelGameEngine
 	{
 	public:
 		Example()
@@ -22,10 +19,10 @@
 		}
 		bool OnUserUpdate(float fElapsedTime) override
 		{
-			// called once per frame, draws random coloured spaces
+			// called once per frame, draws random coloured pixels
 			for (int x = 0; x < ScreenWidth(); x++)
 				for (int y = 0; y < ScreenHeight(); y++)
-					Draw(x, y, jpr::Retro(rand() % 255, rand() % 255, rand()% 255));
+					Draw(x, y, jpr::Pixel(rand() % 255, rand() % 255, rand()% 255));
 			return true;
 		}
 	};
@@ -38,21 +35,19 @@
 	}
 */
 
-//////////////////////////////////////////////////////////////////////////////////////////
-
-#ifndef jpr_PGE_DEF
-#define jpr_PGE_DEF
+#ifndef OLC_PGE_DEF
+#define OLC_PGE_DEF
 
 #if defined(_WIN32) // WINDOWS specific includes ==============================================
-                    // Link to libraries
+	// Link to libraries
 #ifndef __MINGW32__
 	#pragma comment(lib, "user32.lib")		// Visual Studio Only
 	#pragma comment(lib, "gdi32.lib")		// For other Windows Compilers please add
 	#pragma comment(lib, "opengl32.lib")	// these libs to your linker input
 	#pragma comment(lib, "gdiplus.lib")
-	#pragma comment(lib, "Shlwapi.lib")
 #else
-// In Code::Blocks
+	// In Code::Blocks, Select C++14 in your build options, and add the
+	// following libs to your linker: user32 gdi32 opengl32 gdiplus
 	#if !defined _WIN32_WINNT
         #ifdef HAVE_MSMF
             #define _WIN32_WINNT 0x0600 // Windows Vista
@@ -62,10 +57,8 @@
     #endif
 #endif
 	// Include WinAPI
-	//#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	#include <gdiplus.h>
-	#include <Shlwapi.h>
 
 	// OpenGL Extension
 	#include <GL/gl.h>
@@ -73,8 +66,7 @@
 	static wglSwapInterval_t *wglSwapInterval;
 #endif
 
-// LINUX specific includes
-#ifdef __linux__
+#ifdef __linux__ // LINUX specific includes ==============================================
 	#include <GL/gl.h>
 	#include <GL/glx.h>
 	#include <X11/X.h>
@@ -91,7 +83,6 @@
 #include <string>
 #include <iostream>
 #include <streambuf>
-#include <sstream>
 #include <chrono>
 #include <vector>
 #include <list>
@@ -103,38 +94,13 @@
 #include <functional>
 #include <algorithm>
 
-#define USE_EXPERIMENTAL_FS
-
-#if defined(_WIN32)
-	#if _MSC_VER >= 1920 && _MSVC_LANG >= 201703L
-		#undef USE_EXPERIMENTAL_FS
-	#endif
-#endif
-
-#if defined(__linux__) || defined(__MINGW32__) || defined(__EMSCRIPTEN__)
-	#if __cplusplus >= 201703L
-		#undef USE_EXPERIMENTAL_FS
-	#endif
-#endif
-
-#if defined(USE_EXPERIMENTAL_FS)
-	// C++ 14
-	#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
-	#include <experimental/filesystem>
-	namespace _gfs = std::experimental::filesystem::v1;
-#else
-	// C++ 17
-	#include <filesystem>
-	namespace _gfs = std::filesystem;
-#endif
-
 #undef min
 #undef max
 #define UNUSED(x) (void)(x)
 
-namespace jpr // All stuff will now exist in the "jpr" namespace
+namespace olc // All OneLoneCoder stuff will now exist in the "olc" namespace
 {
-	struct Retro
+	struct Pixel
 	{
 		union
 		{
@@ -145,17 +111,17 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 			};
 		};
 
-		Retro();
-		Retro(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255);
-		Retro(uint32_t p);
+		Pixel();
+		Pixel(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255);
+		Pixel(uint32_t p);
 		enum Mode { NORMAL, MASK, ALPHA, CUSTOM };
 
-		bool operator==(const Retro& p) const;
-		bool operator!=(const Retro& p) const;
+		bool operator==(const Pixel& p) const;
+		bool operator!=(const Pixel& p) const;
 	};
 
-	// Some constants for the symbolic naming of spaces
-	static const Retro
+	// Some constants for symbolic naming of Pixels
+	static const Pixel
 		WHITE(255, 255, 255),
 		GREY(192, 192, 192), DARK_GREY(128, 128, 128), VERY_DARK_GREY(64, 64, 64),
 		RED(255, 0, 0), DARK_RED(128, 0, 0), VERY_DARK_RED(64, 0, 0),
@@ -211,11 +177,11 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 	template<class T> inline v2d_generic<T> operator / (const double& lhs, const v2d_generic<T>& rhs){ return v2d_generic<T>(lhs / rhs.x, lhs / rhs.y); }
 	template<class T> inline v2d_generic<T> operator / (const int& lhs, const v2d_generic<T>& rhs)   { return v2d_generic<T>(lhs / rhs.x, lhs / rhs.y); }
 
-	typedef v2d_generic<int32_t> vi2d;
+	typedef v2d_generic<int> vi2d;
 	typedef v2d_generic<float> vf2d;
 	typedef v2d_generic<double> vd2d;
 
-	//=======================================================================================================================================================================================
+	//=============================================================
 
 	struct HWButton
 	{
@@ -224,47 +190,50 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		bool bHeld = false;		// Set true for all frames between pressed and released events
 	};
 
-	//=======================================================================================================================================================================================
+	//=============================================================
 
-	struct ResourceBuffer : public std::streambuf
-	{
-		ResourceBuffer(std::ifstream &ifs, uint32_t offset, uint32_t size);
-		std::vector<char> vMemory;
-	};
 
-	class ResourcePack : public std::streambuf
+	class ResourcePack
 	{
 	public:
 		ResourcePack();
 		~ResourcePack();
-		bool AddFile(const std::string& sFile);
-		bool LoadPack(const std::string& sFile, const std::string& sKey);
-		bool SavePack(const std::string& sFile, const std::string& sKey);
-		ResourceBuffer GetFileBuffer(const std::string& sFile);
-		bool Loaded();
+		struct sEntry : public std::streambuf {
+			uint32_t nID = 0, nFileOffset = 0, nFileSize = 0; uint8_t* data = nullptr; void _config() { this->setg((char*)data, (char*)data, (char*)(data + nFileSize)); }
+		};
+
+	public:
+		olc::rcode AddToPack(std::string sFile);
+
+	public:
+		olc::rcode SavePack(std::string sFile);
+		olc::rcode LoadPack(std::string sFile);
+		olc::rcode ClearPack();
+
+	public:
+		olc::ResourcePack::sEntry GetStreamBuffer(std::string sFile);
+
 	private:
-		struct sResourceFile { uint32_t nSize; uint32_t nOffset; };
-		std::map<std::string, sResourceFile> mapFiles;
-		std::ifstream baseFile;
-		const std::string scramble(const std::string& data, const std::string& key);
-		std::string makeposix(const std::string& path);
+
+		std::map<std::string, sEntry> mapFiles;
 	};
 
-	//=======================================================================================================================================================================================
+	//=============================================================
 
-	// An structure like a bitmap that stores a 2D array of spaces on the memory for screen
+	// A bitmap-like structure that stores a 2D array of Pixels
 	class Sprite
 	{
 	public:
 		Sprite();
-		Sprite(std::string sImageFile, jpr::ResourcePack *pack = nullptr);
+		Sprite(std::string sImageFile);
+		Sprite(std::string sImageFile, olc::ResourcePack *pack);
 		Sprite(int32_t w, int32_t h);
 		~Sprite();
 
 	public:
-		jpr::rcode LoadFromFile(std::string sImageFile, jpr::ResourcePack *pack = nullptr);
-		jpr::rcode LoadFromPGESprFile(std::string sImageFile, jpr::ResourcePack *pack = nullptr);
-		jpr::rcode SaveToPGESprFile(std::string sImageFile);
+		olc::rcode LoadFromFile(std::string sImageFile, olc::ResourcePack *pack = nullptr);
+		olc::rcode LoadFromPGESprFile(std::string sImageFile, olc::ResourcePack *pack = nullptr);
+		olc::rcode SaveToPGESprFile(std::string sImageFile);
 
 	public:
 		int32_t width = 0;
@@ -272,26 +241,26 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		enum Mode { NORMAL, PERIODIC };
 
 	public:
-		void SetSampleMode(jpr::Sprite::Mode mode = jpr::Sprite::Mode::NORMAL);
-		Retro GetRetro(int32_t x, int32_t y);
-		bool  SetRetro(int32_t x, int32_t y, Retro p);
+		void SetSampleMode(olc::Sprite::Mode mode = olc::Sprite::Mode::NORMAL);
+		Pixel GetPixel(int32_t x, int32_t y);
+		bool  SetPixel(int32_t x, int32_t y, Pixel p);
 
-		Retro Sample(float x, float y);
-		Retro SampleBL(float u, float v);
-		Retro* GetData();
+		Pixel Sample(float x, float y);
+		Pixel SampleBL(float u, float v);
+		Pixel* GetData();
 
 	private:
-		Retro *pColData = nullptr;
+		Pixel *pColData = nullptr;
 		Mode modeSample = Mode::NORMAL;
 
-#ifdef jpr_DBG_OVERDRAW
+#ifdef OLC_DBG_OVERDRAW
 	public:
 		static int nOverdrawCount;
 #endif
 
 	};
 
-	//=======================================================================================================================================================================================
+	//=============================================================
 
 	enum Key
 	{
@@ -307,47 +276,47 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 	};
 
 
-	//=======================================================================================================================================================================================
+	//=============================================================
 
-	class retroGameEngine
+	class PixelGameEngine
 	{
 	public:
-		retroGameEngine();
+		PixelGameEngine();
 
 	public:
-		jpr::rcode	Construct(uint32_t screen_w, uint32_t screen_h, uint32_t Retro_w, uint32_t Retro_h, bool full_screen = false, bool vsync = false);
-		jpr::rcode	Start();
+		olc::rcode	Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen = false, bool vsync = false);
+		olc::rcode	Start();
 
-	public: // Override Default Interfaces
-		// Only called on application startup and it's function is to load your resources
+	public: // Override Interfaces
+		// Called once on application startup, use to load your resources
 		virtual bool OnUserCreate();
-		// Called fpr every frame and provides the user with a time per frame value with auto-refresh
+		// Called every frame, and provides you with a time per frame value
 		virtual bool OnUserUpdate(float fElapsedTime);
-		// Only called on application termination so the user can be a good programmer and clean the code as good practices says so.
+		// Called once on application termination, so you can be a clean coder
 		virtual bool OnUserDestroy();
 
-	public: // Hardware Interfaces Emulation
-		// Returns true if the emulation window is currently in focus
+	public: // Hardware Interfaces
+		// Returns true if window is currently in focus
 		bool IsFocused();
-		// Get the state of the pressed key in the keyboard
+		// Get the state of a specific keyboard button
 		HWButton GetKey(Key k);
-		// Get the state of the pressed button on the mouse.
+		// Get the state of a specific mouse button
 		HWButton GetMouse(uint32_t b);
-		// Get the cursor and mouse X coordinate for and into the space and position.
+		// Get Mouse X coordinate in "pixel" space
 		int32_t GetMouseX();
-		// Get the cursor and mouse Y coordinate for and into the space and position.
+		// Get Mouse Y coordinate in "pixel" space
 		int32_t GetMouseY();
-		// Get the cursor and mouse delta wheel position and space.
+		// Get Mouse Wheel Delta
 		int32_t GetMouseWheel();
 
-	public: // Utilities
-		// Returns the width of the screen in spaces
+	public: // Utility
+		// Returns the width of the screen in "pixels"
 		int32_t ScreenWidth();
-		// Returns the height of the screen in spaces
+		// Returns the height of the screen in "pixels"
 		int32_t ScreenHeight();
-		// Returns the width of the currently selected drawing target in "spaces"
+		// Returns the width of the currently selected drawing target in "pixels"
 		int32_t GetDrawTargetWidth();
-		// Returns the height of the currently selected drawing target in "spaces"
+		// Returns the height of the currently selected drawing target in "pixels"
 		int32_t GetDrawTargetHeight();
 		// Returns the currently active draw target
 		Sprite* GetDrawTarget();
@@ -356,69 +325,59 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		// Specify which Sprite should be the target of drawing functions, use nullptr
 		// to specify the primary screen
 		void SetDrawTarget(Sprite *target);
-		// Change the Retro mode for different optimisations
-		// jpr::Retro::NORMAL = No transparency
-		// jpr::Retro::MASK   = Transparent if alpha is < 255
-		// jpr::Retro::ALPHA  = Full transparency
-		void SetRetroMode(Retro::Mode m);
-		Retro::Mode GetRetroMode();
+		// Change the pixel mode for different optimisations
+		// olc::Pixel::NORMAL = No transparency
+		// olc::Pixel::MASK   = Transparent if alpha is < 255
+		// olc::Pixel::ALPHA  = Full transparency
+		void SetPixelMode(Pixel::Mode m);
+		Pixel::Mode GetPixelMode();
 		// Use a custom blend function
-		void SetRetroMode(std::function<jpr::Retro(const int x, const int y, const jpr::Retro& pSource, const jpr::Retro& pDest)> RetroMode);
+		void SetPixelMode(std::function<olc::Pixel(const int x, const int y, const olc::Pixel& pSource, const olc::Pixel& pDest)> pixelMode);
 		// Change the blend factor form between 0.0f to 1.0f;
-		void SetRetroBlend(float fBlend);
-		// Offset texels by sub-Retro amount (advanced, do not use)
-		void SetSubRetroOffset(float ox, float oy);
+		void SetPixelBlend(float fBlend);
+		// Offset texels by sub-pixel amount (advanced, do not use)
+		void SetSubPixelOffset(float ox, float oy);
 
-		// Draws a single space
-		virtual bool Draw(int32_t x, int32_t y, Retro p = jpr::WHITE);
-		bool Draw(const jpr::vi2d& pos, Retro p = jpr::WHITE);
+		// Draws a single Pixel
+		virtual bool Draw(int32_t x, int32_t y, Pixel p = olc::WHITE);
 		// Draws a line from (x1,y1) to (x2,y2)
-		void DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, Retro p = jpr::WHITE, uint32_t pattern = 0xFFFFFFFF);
-		void DrawLine(const jpr::vi2d& pos1, const jpr::vi2d& pos2, Retro p = jpr::WHITE, uint32_t pattern = 0xFFFFFFFF);
+		void DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, Pixel p = olc::WHITE, uint32_t pattern = 0xFFFFFFFF);
 		// Draws a circle located at (x,y) with radius
-		void DrawCircle(int32_t x, int32_t y, int32_t radius, Retro p = jpr::WHITE, uint8_t mask = 0xFF);
-		void DrawCircle(const jpr::vi2d& pos, int32_t radius, Retro p = jpr::WHITE, uint8_t mask = 0xFF);
+		void DrawCircle(int32_t x, int32_t y, int32_t radius, Pixel p = olc::WHITE, uint8_t mask = 0xFF);
 		// Fills a circle located at (x,y) with radius
-		void FillCircle(int32_t x, int32_t y, int32_t radius, Retro p = jpr::WHITE);
-		void FillCircle(const jpr::vi2d& pos, int32_t radius, Retro p = jpr::WHITE);
+		void FillCircle(int32_t x, int32_t y, int32_t radius, Pixel p = olc::WHITE);
 		// Draws a rectangle at (x,y) to (x+w,y+h)
-		void DrawRect(int32_t x, int32_t y, int32_t w, int32_t h, Retro p = jpr::WHITE);
-		void DrawRect(const jpr::vi2d& pos, const jpr::vi2d& size, Retro p = jpr::WHITE);
+		void DrawRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p = olc::WHITE);
 		// Fills a rectangle at (x,y) to (x+w,y+h)
-		void FillRect(int32_t x, int32_t y, int32_t w, int32_t h, Retro p = jpr::WHITE);
-		void FillRect(const jpr::vi2d& pos, const jpr::vi2d& size, Retro p = jpr::WHITE);
+		void FillRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p = olc::WHITE);
 		// Draws a triangle between points (x1,y1), (x2,y2) and (x3,y3)
-		void DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Retro p = jpr::WHITE);
-		void DrawTriangle(const jpr::vi2d& pos1, const jpr::vi2d& pos2, const jpr::vi2d& pos3, Retro p = jpr::WHITE);
+		void DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p = olc::WHITE);
 		// Flat fills a triangle between points (x1,y1), (x2,y2) and (x3,y3)
-		void FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Retro p = jpr::WHITE);
-		void FillTriangle(const jpr::vi2d& pos1, const jpr::vi2d& pos2, const jpr::vi2d& pos3, Retro p = jpr::WHITE);
-		// Draws an entire sprite in the location (x,y)
+		void FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p = olc::WHITE);
+		// Draws an entire sprite at location (x,y)
 		void DrawSprite(int32_t x, int32_t y, Sprite *sprite, uint32_t scale = 1);
-		void DrawSprite(const jpr::vi2d& pos, Sprite *sprite, uint32_t scale = 1);
-		// Draws an area of a sprite at location (x,y), where the selected area is (ox,oy) to (ox+w,oy+h)
+		// Draws an area of a sprite at location (x,y), where the
+		// selected area is (ox,oy) to (ox+w,oy+h)
 		void DrawPartialSprite(int32_t x, int32_t y, Sprite *sprite, int32_t ox, int32_t oy, int32_t w, int32_t h, uint32_t scale = 1);
-		void DrawPartialSprite(const jpr::vi2d& pos, Sprite *sprite, const jpr::vi2d& sourcepos, const jpr::vi2d& size, uint32_t scale = 1);
-		// Draws one single line of text
-		void DrawString(int32_t x, int32_t y, const std::string& sText, Retro col = jpr::WHITE, uint32_t scale = 1);
-		void DrawString(const jpr::vi2d& pos, const std::string& sText, Retro col = jpr::WHITE, uint32_t scale = 1);
-		// Clears entire draw target to space
-		void Clear(Retro p);
-		// Resize the full primary screen sprite
+		// Draws a single line of text
+		void DrawString(int32_t x, int32_t y, std::string sText, Pixel col = olc::WHITE, uint32_t scale = 1);
+		// Clears entire draw target to Pixel
+		void Clear(Pixel p);
+		// Resize the primary screen sprite
 		void SetScreenSize(int w, int h);
 
-	public: // Branding (The app name)
+	public: // Branding
 		std::string sAppName;
 
 	private: // Inner mysterious workings
 		Sprite		*pDefaultDrawTarget = nullptr;
 		Sprite		*pDrawTarget = nullptr;
-		Retro::Mode	nRetroMode = Retro::NORMAL;
+		Pixel::Mode	nPixelMode = Pixel::NORMAL;
 		float		fBlendFactor = 1.0f;
 		uint32_t	nScreenWidth = 256;
 		uint32_t	nScreenHeight = 240;
-		uint32_t	nRetroWidth = 4;
-		uint32_t	nRetroHeight = 4;
+		uint32_t	nPixelWidth = 4;
+		uint32_t	nPixelHeight = 4;
 		int32_t		nMousePosX = 0;
 		int32_t		nMousePosY = 0;
 		int32_t		nMouseWheelDelta = 0;
@@ -432,17 +391,17 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		int32_t		nViewW = 0;
 		int32_t		nViewH = 0;
 		bool		bFullScreen = false;
-		float		fRetroX = 1.0f;
-		float		fRetroY = 1.0f;
-		float		fSubRetroOffsetX = 0.0f;
-		float		fSubRetroOffsetY = 0.0f;
+		float		fPixelX = 1.0f;
+		float		fPixelY = 1.0f;
+		float		fSubPixelOffsetX = 0.0f;
+		float		fSubPixelOffsetY = 0.0f;
 		bool		bHasInputFocus = false;
 		bool		bHasMouseFocus = false;
 		bool		bEnableVSYNC = false;
 		float		fFrameTimer = 1.0f;
 		int			nFrameCount = 0;
 		Sprite		*fontSprite = nullptr;
-		std::function<jpr::Retro(const int x, const int y, const jpr::Retro&, const jpr::Retro&)> funcRetroMode;
+		std::function<olc::Pixel(const int x, const int y, const olc::Pixel&, const olc::Pixel&)> funcPixelMode;
 
 		static std::map<size_t, uint8_t> mapKeys;
 		bool		pKeyNewState[256]{ 0 };
@@ -471,47 +430,47 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 		static std::atomic<bool> bAtomActive;
 
 		// Common initialisation functions
-		void jpr_UpdateMouse(int32_t x, int32_t y);
-		void jpr_UpdateMouseWheel(int32_t delta);
-		void jpr_UpdateWindowSize(int32_t x, int32_t y);
-		void jpr_UpdateViewport();
-		bool jpr_OpenGLCreate();
-		void jpr_ConstructFontSheet();
+		void olc_UpdateMouse(int32_t x, int32_t y);
+		void olc_UpdateMouseWheel(int32_t delta);
+		void olc_UpdateWindowSize(int32_t x, int32_t y);
+		void olc_UpdateViewport();
+		bool olc_OpenGLCreate();
+		void olc_ConstructFontSheet();
 
 
 #if defined(_WIN32)
 		// Windows specific window handling
-		HWND jpr_hWnd = nullptr;
-		HWND jpr_WindowCreate();
+		HWND olc_hWnd = nullptr;
+		HWND olc_WindowCreate();
 		std::wstring wsAppName;
-		static LRESULT CALLBACK jpr_WindowEvent(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+		static LRESULT CALLBACK olc_WindowEvent(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif
 
 #if defined(__linux__)
 		// Non-Windows specific window handling
-		Display*				jpr_Display = nullptr;
-		Window					jpr_WindowRoot;
-		Window					jpr_Window;
-		XVisualInfo*            jpr_VisualInfo;
-		Colormap                jpr_ColourMap;
-		XSetWindowAttributes    jpr_SetWindowAttribs;
-		Display*				jpr_WindowCreate();
+		Display*				olc_Display = nullptr;
+		Window					olc_WindowRoot;
+		Window					olc_Window;
+		XVisualInfo*            olc_VisualInfo;
+		Colormap                olc_ColourMap;
+		XSetWindowAttributes    olc_SetWindowAttribs;
+		Display*				olc_WindowCreate();
 #endif
 
 	};
 
 
-	class RGEX
+	class PGEX
 	{
-		friend class jpr::retroGameEngine;
+		friend class olc::PixelGameEngine;
 	protected:
-		static retroGameEngine* pge;
+		static PixelGameEngine* pge;
 	};
 
 	//=============================================================
 }
 
-#endif // jpr_PGE_DEF
+#endif // OLC_PGE_DEF
 
 
 
@@ -521,53 +480,50 @@ namespace jpr // All stuff will now exist in the "jpr" namespace
 	~~~~~~~~~~~~~~~~~~~~
 
 	If the retroGameEngine.h is called from several sources it can cause
-	multiple definitions of objects. To prevent this just only one of the pathways
-	to including this file must have jpr_PGE_APPLICATION defined before it.
-
-	This preventsthe definitions being duplicated.
+	multiple definitions of objects. To prevent this, ONLY ONE of the pathways
+	to including this file must have JPR_RGEX_APPLICATION defined before it. This prevents
+	the definitions being duplicated.
 
 	If all else fails, create a file called "retroGameEngine.cpp" with the following
-	two lines.
-
-	Then you can just #include "retroGameEngine.h" as normal without worrying
+	two lines. Then you can just #include "retroGameEngine.h" as normal without worrying
 	about defining things. Dont forget to include that cpp file as part of your build!
 
-	#define jpr_PGE_APPLICATION
+	#define JPR_RGEX_APPLICATION
 	#include "retroGameEngine.h"
 
 */
 
-#ifdef jpr_PGE_APPLICATION
-#undef jpr_PGE_APPLICATION
+#ifdef JPR_RGEX_APPLICATION
+#undef JPR_RGEX_APPLICATION
 
-namespace jpr
+namespace olc
 {
-	Retro::Retro()
+	Pixel::Pixel()
 	{
 		r = 0; g = 0; b = 0; a = 255;
 	}
 
-	Retro::Retro(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
+	Pixel::Pixel(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 	{
 		r = red; g = green; b = blue; a = alpha;
 	}
 
-	Retro::Retro(uint32_t p)
+	Pixel::Pixel(uint32_t p)
 	{
 		n = p;
 	}
 
-	bool Retro::operator==(const Retro& p) const
+	bool Pixel::operator==(const Pixel& p) const
 	{
 		return n == p.n;
 	}
 
-	bool Retro::operator!=(const Retro& p) const
+	bool Pixel::operator!=(const Pixel& p) const
 	{
 		return n != p.n;
 	}
 
-	//==============================================================================================================================================================================
+	//==========================================================
 
 #if defined(_WIN32)
 	std::wstring ConvertS2W(std::string s)
@@ -594,18 +550,23 @@ namespace jpr
 		height = 0;
 	}
 
-	Sprite::Sprite(std::string sImageFile, jpr::ResourcePack *pack)
+	Sprite::Sprite(std::string sImageFile)
 	{
-		LoadFromFile(sImageFile, pack);
+		LoadFromFile(sImageFile);
+	}
+
+	Sprite::Sprite(std::string sImageFile, olc::ResourcePack *pack)
+	{
+		LoadFromPGESprFile(sImageFile, pack);
 	}
 
 	Sprite::Sprite(int32_t w, int32_t h)
 	{
 		if(pColData) delete[] pColData;
 		width = w;		height = h;
-		pColData = new Retro[width * height];
+		pColData = new Pixel[width * height];
 		for (int32_t i = 0; i < width*height; i++)
-			pColData[i] = Retro();
+			pColData[i] = Pixel();
 	}
 
 	Sprite::~Sprite()
@@ -613,7 +574,7 @@ namespace jpr
 		if (pColData) delete pColData;
 	}
 
-	jpr::rcode Sprite::LoadFromPGESprFile(std::string sImageFile, jpr::ResourcePack *pack)
+	olc::rcode Sprite::LoadFromPGESprFile(std::string sImageFile, olc::ResourcePack *pack)
 	{
 		if (pColData) delete[] pColData;
 
@@ -621,11 +582,11 @@ namespace jpr
 		{
 			is.read((char*)&width, sizeof(int32_t));
 			is.read((char*)&height, sizeof(int32_t));
-			pColData = new Retro[width * height];
+			pColData = new Pixel[width * height];
 			is.read((char*)pColData, width * height * sizeof(uint32_t));
 		};
 
-		// These are essentially Memory Surfaces represented by jpr::Sprite
+		// These are essentially Memory Surfaces represented by olc::Sprite
 		// which load very fast, but are completely uncompressed
 		if (pack == nullptr)
 		{
@@ -634,25 +595,25 @@ namespace jpr
 			if (ifs.is_open())
 			{
 				ReadData(ifs);
-				return jpr::OK;
+				return olc::OK;
 			}
 			else
-				return jpr::FAIL;
+				return olc::FAIL;
 		}
 		else
 		{
-			ResourceBuffer rb = pack->GetFileBuffer(sImageFile);
-			std::istream is(&rb);
+			auto streamBuffer = pack->GetStreamBuffer(sImageFile);
+			std::istream is(&streamBuffer);
 			ReadData(is);
 		}
 
 
-		return jpr::FAIL;
+		return olc::FAIL;
 		}
 
-	jpr::rcode Sprite::SaveToPGESprFile(std::string sImageFile)
+	olc::rcode Sprite::SaveToPGESprFile(std::string sImageFile)
 	{
-		if (pColData == nullptr) return jpr::FAIL;
+		if (pColData == nullptr) return olc::FAIL;
 
 		std::ofstream ofs;
 		ofs.open(sImageFile, std::ifstream::binary);
@@ -662,100 +623,46 @@ namespace jpr
 			ofs.write((char*)&height, sizeof(int32_t));
 			ofs.write((char*)pColData, width*height*sizeof(uint32_t));
 			ofs.close();
-			return jpr::OK;
+			return olc::OK;
 		}
 
-		return jpr::FAIL;
+		return olc::FAIL;
 	}
 
-#if defined(__linux__)
-	void pngReadStream(png_structp pngPtr, png_bytep data, png_size_t length)
-	{
-		png_voidp a = png_get_io_ptr(pngPtr);
-		((std::istream*)a)->read((char*)data, length);
-	}
-#endif
-
-	jpr::rcode Sprite::LoadFromFile(std::string sImageFile, jpr::ResourcePack *pack)
+	olc::rcode Sprite::LoadFromFile(std::string sImageFile, olc::ResourcePack *pack)
 	{
 		UNUSED(pack);
-
 #if defined(_WIN32)
-		Gdiplus::Bitmap *bmp = nullptr;
-		if (pack != nullptr)
-		{
-			// Load sprite from input stream
-			ResourceBuffer rb = pack->GetFileBuffer(sImageFile);
-			bmp = Gdiplus::Bitmap::FromStream(SHCreateMemStream((BYTE*)rb.vMemory.data(), rb.vMemory.size()));
-		}
-		else
-		{
-			// Load sprite from file
-			bmp = Gdiplus::Bitmap::FromFile(ConvertS2W(sImageFile).c_str());
-		}
+		// Use GDI+
+		std::wstring wsImageFile = ConvertS2W(sImageFile);
+        Gdiplus::Bitmap *bmp = Gdiplus::Bitmap::FromFile(wsImageFile.c_str());
+		if (bmp == nullptr)
+			return olc::NO_FILE;
 
-		if (bmp == nullptr) return jpr::NO_FILE;
 		width = bmp->GetWidth();
 		height = bmp->GetHeight();
-		pColData = new Retro[width * height];
+		pColData = new Pixel[width * height];
 
 		for(int x=0; x<width; x++)
 			for (int y = 0; y < height; y++)
 			{
 				Gdiplus::Color c;
-				bmp->GetRetro(x, y, &c);
-				SetRetro(x, y, Retro(c.GetRed(), c.GetGreen(), c.GetBlue(), c.GetAlpha()));
+				bmp->GetPixel(x, y, &c);
+				SetPixel(x, y, Pixel(c.GetRed(), c.GetGreen(), c.GetBlue(), c.GetAlpha()));
 			}
 		delete bmp;
-		return jpr::OK;
+		return olc::OK;
 #endif
 
 #if defined(__linux__)
-
+		////////////////////////////////////////////////////////////////////////////
+		// Use libpng, Thanks to Guillaume Cottenceau
+		// https://gist.github.com/niw/5963798
 		png_structp png;
 		png_infop info;
 
-		auto loadPNG = [&]()
-		{
-			png_read_info(png, info);
-			png_byte color_type;
-			png_byte bit_depth;
-			png_bytep *row_pointers;
-			width = png_get_image_width(png, info);
-			height = png_get_image_height(png, info);
-			color_type = png_get_color_type(png, info);
-			bit_depth = png_get_bit_depth(png, info);
-			if (bit_depth == 16) png_set_strip_16(png);
-			if (color_type == PNG_COLOR_TYPE_PALETTE) png_set_palette_to_rgb(png);
-			if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)	png_set_expand_gray_1_2_4_to_8(png);
-			if (png_get_valid(png, info, PNG_INFO_tRNS)) png_set_tRNS_to_alpha(png);
-			if (color_type == PNG_COLOR_TYPE_RGB ||
-				color_type == PNG_COLOR_TYPE_GRAY ||
-				color_type == PNG_COLOR_TYPE_PALETTE)
-				png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
-			if (color_type == PNG_COLOR_TYPE_GRAY ||
-				color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
-				png_set_gray_to_rgb(png);
-			png_read_update_info(png, info);
-			row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * height);
-			for (int y = 0; y < height; y++) {
-				row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png, info));
-			}
-			png_read_image(png, row_pointers);
-			//====================================================================================================================
-			// Create sprite array
-			pColData = new Retro[width * height];
-			// Iterate through image rows, converting into sprite format
-			for (int y = 0; y < height; y++)
-			{
-				png_bytep row = row_pointers[y];
-				for (int x = 0; x < width; x++)
-				{
-					png_bytep px = &(row[x * 4]);
-					SetRetro(x, y, Retro(px[0], px[1], px[2], px[3]));
-				}
-			}
-		};
+		FILE *f = fopen(sImageFile.c_str(), "rb");
+		if (!f) return olc::NO_FILE;
 
 		png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 		if (!png) goto fail_load;
@@ -765,46 +672,82 @@ namespace jpr
 
 		if (setjmp(png_jmpbuf(png))) goto fail_load;
 
-		if (pack == nullptr)
-		{
-			FILE* f = fopen(sImageFile.c_str(), "rb");
-			if (!f) return jpr::NO_FILE;
-			png_init_io(png, f);
-			loadPNG();
-			fclose(f);
-		}
-		else
-		{
+		png_init_io(png, f);
+		png_read_info(png, info);
 
-			ResourceBuffer rb = pack->GetFileBuffer(sImageFile);
-			std::istream is(&rb);
-			png_set_read_fn(png, (png_voidp)&is, pngReadStream);
-			loadPNG();
+		png_byte color_type;
+		png_byte bit_depth;
+		png_bytep *row_pointers;
+		width = png_get_image_width(png, info);
+		height = png_get_image_height(png, info);
+		color_type = png_get_color_type(png, info);
+		bit_depth = png_get_bit_depth(png, info);
+
+#ifdef _DEBUG
+		std::cout << "Loading PNG: " << sImageFile << "\n";
+		std::cout << "W:" << width << " H:" << height << " D:" << (int)bit_depth << "\n";
+#endif
+
+		if (bit_depth == 16) png_set_strip_16(png);
+		if (color_type == PNG_COLOR_TYPE_PALETTE) png_set_palette_to_rgb(png);
+		if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)	png_set_expand_gray_1_2_4_to_8(png);
+		if (png_get_valid(png, info, PNG_INFO_tRNS)) png_set_tRNS_to_alpha(png);
+		if (color_type == PNG_COLOR_TYPE_RGB ||
+			color_type == PNG_COLOR_TYPE_GRAY ||
+			color_type == PNG_COLOR_TYPE_PALETTE)
+			png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
+		if (color_type == PNG_COLOR_TYPE_GRAY ||
+			color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+			png_set_gray_to_rgb(png);
+
+		png_read_update_info(png, info);
+		row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * height);
+		for (int y = 0; y < height; y++) {
+			row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png, info));
 		}
-		return jpr::OK;
+		png_read_image(png, row_pointers);
+		////////////////////////////////////////////////////////////////////////////
+
+		// Create sprite array
+		pColData = new Pixel[width * height];
+
+		// Iterate through image rows, converting into sprite format
+		for (int y = 0; y < height; y++)
+		{
+			png_bytep row = row_pointers[y];
+			for (int x = 0; x < width; x++)
+			{
+				png_bytep px = &(row[x * 4]);
+				SetPixel(x, y, Pixel(px[0], px[1], px[2], px[3]));
+			}
+		}
+
+		fclose(f);
+		return olc::OK;
 
 	fail_load:
 		width = 0;
 		height = 0;
+		fclose(f);
 		pColData = nullptr;
-		return jpr::FAIL;
+		return olc::FAIL;
 #endif
 	}
 
-	void Sprite::SetSampleMode(jpr::Sprite::Mode mode)
+	void Sprite::SetSampleMode(olc::Sprite::Mode mode)
 	{
 		modeSample = mode;
 	}
 
 
-	Retro Sprite::GetRetro(int32_t x, int32_t y)
+	Pixel Sprite::GetPixel(int32_t x, int32_t y)
 	{
-		if (modeSample == jpr::Sprite::Mode::NORMAL)
+		if (modeSample == olc::Sprite::Mode::NORMAL)
 		{
 			if (x >= 0 && x < width && y >= 0 && y < height)
 				return pColData[y*width + x];
 			else
-				return Retro(0, 0, 0, 0);
+				return Pixel(0, 0, 0, 0);
 		}
 		else
 		{
@@ -812,10 +755,10 @@ namespace jpr
 		}
 	}
 
-	bool Sprite::SetRetro(int32_t x, int32_t y, Retro p)
+	bool Sprite::SetPixel(int32_t x, int32_t y, Pixel p)
 	{
 
-#ifdef jpr_DBG_OVERDRAW
+#ifdef OLC_DBG_OVERDRAW
 		nOverdrawCount++;
 #endif
 
@@ -828,237 +771,212 @@ namespace jpr
 			return false;
 	}
 
-	Retro Sprite::Sample(float x, float y)
+	Pixel Sprite::Sample(float x, float y)
 	{
 		int32_t sx = std::min((int32_t)((x * (float)width)), width - 1);
 		int32_t sy = std::min((int32_t)((y * (float)height)), height - 1);
-		return GetRetro(sx, sy);
+		return GetPixel(sx, sy);
 	}
 
-	Retro Sprite::SampleBL(float u, float v)
+	Pixel Sprite::SampleBL(float u, float v)
 	{
 		u = u * width - 0.5f;
 		v = v * height - 0.5f;
-		int x = (int)floor(u);
-		int y = (int)floor(v);
+		int x = (int)floor(u); // cast to int rounds toward zero, not downward
+		int y = (int)floor(v); // Thanks @joshinils
 		float u_ratio = u - x;
 		float v_ratio = v - y;
 		float u_opposite = 1 - u_ratio;
 		float v_opposite = 1 - v_ratio;
 
-		jpr::Retro p1 = GetRetro(std::max(x, 0), std::max(y, 0));
-		jpr::Retro p2 = GetRetro(std::min(x + 1, (int)width - 1), std::max(y, 0));
-		jpr::Retro p3 = GetRetro(std::max(x, 0), std::min(y + 1, (int)height - 1));
-		jpr::Retro p4 = GetRetro(std::min(x + 1, (int)width - 1), std::min(y + 1, (int)height - 1));
+		olc::Pixel p1 = GetPixel(std::max(x, 0), std::max(y, 0));
+		olc::Pixel p2 = GetPixel(std::min(x + 1, (int)width - 1), std::max(y, 0));
+		olc::Pixel p3 = GetPixel(std::max(x, 0), std::min(y + 1, (int)height - 1));
+		olc::Pixel p4 = GetPixel(std::min(x + 1, (int)width - 1), std::min(y + 1, (int)height - 1));
 
-		return jpr::Retro(
+		return olc::Pixel(
 			(uint8_t)((p1.r * u_opposite + p2.r * u_ratio) * v_opposite + (p3.r * u_opposite + p4.r * u_ratio) * v_ratio),
 			(uint8_t)((p1.g * u_opposite + p2.g * u_ratio) * v_opposite + (p3.g * u_opposite + p4.g * u_ratio) * v_ratio),
 			(uint8_t)((p1.b * u_opposite + p2.b * u_ratio) * v_opposite + (p3.b * u_opposite + p4.b * u_ratio) * v_ratio));
 	}
 
-	Retro* Sprite::GetData() { return pColData; }
+	Pixel* Sprite::GetData() { return pColData; }
 
 	//==========================================================
-	// Resource Packs - Allows you to store files in one large
-	// scrambled file
 
-
-	ResourceBuffer::ResourceBuffer(std::ifstream &ifs, uint32_t offset, uint32_t size)
+	ResourcePack::ResourcePack()
 	{
-		vMemory.resize(size);
-		ifs.seekg(offset); ifs.read(vMemory.data(), vMemory.size());
-		setg(vMemory.data(), vMemory.data(), vMemory.data() + size);
+
 	}
 
-	ResourcePack::ResourcePack() { }
-	ResourcePack::~ResourcePack() {	baseFile.close(); }
-
-	bool ResourcePack::AddFile(const std::string& sFile)
+	ResourcePack::~ResourcePack()
 	{
+		ClearPack();
+	}
 
-		const std::string file = makeposix(sFile);
+	olc::rcode ResourcePack::AddToPack(std::string sFile)
+	{
+		std::ifstream ifs(sFile, std::ifstream::binary);
+		if (!ifs.is_open()) return olc::FAIL;
 
-		if (_gfs::exists(file))
+		// Get File Size
+		std::streampos p = 0;
+		p = ifs.tellg();
+		ifs.seekg(0, std::ios::end);
+		p = ifs.tellg() - p;
+		ifs.seekg(0, std::ios::beg);
+
+		// Create entry
+		sEntry e;
+		e.data = nullptr;
+		e.nFileSize = (uint32_t)p;
+
+		// Read file into memory
+		e.data = new uint8_t[(uint32_t)e.nFileSize];
+		ifs.read((char*)e.data, e.nFileSize);
+		ifs.close();
+
+		// Add To Map
+		mapFiles[sFile] = e;
+		return olc::OK;
+	}
+
+	olc::rcode ResourcePack::SavePack(std::string sFile)
+	{
+		std::ofstream ofs(sFile, std::ofstream::binary);
+		if (!ofs.is_open()) return olc::FAIL;
+
+		// 1) Write Map
+		size_t nMapSize = mapFiles.size();
+		ofs.write((char*)&nMapSize, sizeof(size_t));
+		for (auto &e : mapFiles)
 		{
-			sResourceFile e;
-			e.nSize = (uint32_t)_gfs::file_size(file);
-			// Unknown at this stage
-			e.nOffset = 0;
-			mapFiles[file] = e;
-			return true;
+			size_t nPathSize = e.first.size();
+			ofs.write((char*)&nPathSize, sizeof(size_t));
+			ofs.write(e.first.c_str(), nPathSize);
+			ofs.write((char*)&e.second.nID, sizeof(uint32_t));
+			ofs.write((char*)&e.second.nFileSize, sizeof(uint32_t));
+			ofs.write((char*)&e.second.nFileOffset, sizeof(uint32_t));
 		}
-		return false;
+
+		// 2) Write Data
+		std::streampos offset = ofs.tellp();
+		for (auto &e : mapFiles)
+		{
+			e.second.nFileOffset = (uint32_t)offset;
+			ofs.write((char*)e.second.data, e.second.nFileSize);
+			offset += e.second.nFileSize;
+		}
+
+		// 3) Rewrite Map (it has been updated with offsets now)
+		ofs.seekp(std::ios::beg);
+		ofs.write((char*)&nMapSize, sizeof(size_t));
+		for (auto &e : mapFiles)
+		{
+			size_t nPathSize = e.first.size();
+			ofs.write((char*)&nPathSize, sizeof(size_t));
+			ofs.write(e.first.c_str(), nPathSize);
+			ofs.write((char*)&e.second.nID, sizeof(uint32_t));
+			ofs.write((char*)&e.second.nFileSize, sizeof(uint32_t));
+			ofs.write((char*)&e.second.nFileOffset, sizeof(uint32_t));
+		}
+		ofs.close();
+
+		return olc::OK;
 	}
 
-	bool ResourcePack::LoadPack(const std::string& sFile, const std::string& sKey)
+	olc::rcode ResourcePack::LoadPack(std::string sFile)
 	{
-		// Open the resource file
-		baseFile.open(sFile, std::ifstream::binary);
-		if (!baseFile.is_open()) return false;
+		std::ifstream ifs(sFile, std::ifstream::binary);
+		if (!ifs.is_open()) return olc::FAIL;
 
-		// 1) Read Scrambled index
-		uint32_t nIndexSize = 0;
-		baseFile.read((char*)&nIndexSize, sizeof(uint32_t));
-
-		std::string buffer(nIndexSize, ' ');
-		for (uint32_t j = 0; j < nIndexSize; j++)
-			buffer[j] = baseFile.get();
-
-		std::string decoded = scramble(buffer, sKey);
-		std::stringstream iss(decoded);
-
-		// 2) Read Map
+		// 1) Read Map
 		uint32_t nMapEntries;
-		iss.read((char*)&nMapEntries, sizeof(uint32_t));
+		ifs.read((char*)&nMapEntries, sizeof(uint32_t));
 		for (uint32_t i = 0; i < nMapEntries; i++)
 		{
 			uint32_t nFilePathSize = 0;
-			iss.read((char*)&nFilePathSize, sizeof(uint32_t));
+			ifs.read((char*)&nFilePathSize, sizeof(uint32_t));
 
 			std::string sFileName(nFilePathSize, ' ');
 			for (uint32_t j = 0; j < nFilePathSize; j++)
-				sFileName[j] = iss.get();
+				sFileName[j] = ifs.get();
 
-			sResourceFile e;
-			iss.read((char*)&e.nSize, sizeof(uint32_t));
-			iss.read((char*)&e.nOffset, sizeof(uint32_t));
+			sEntry e;
+			e.data = nullptr;
+			ifs.read((char*)&e.nID, sizeof(uint32_t));
+			ifs.read((char*)&e.nFileSize, sizeof(uint32_t));
+			ifs.read((char*)&e.nFileOffset, sizeof(uint32_t));
 			mapFiles[sFileName] = e;
 		}
 
-		// Don't close base file! we will provide a stream
-		// pointer when the file is requested
-		return true;
-	}
-
-	bool ResourcePack::SavePack(const std::string& sFile, const std::string& sKey)
-	{
-		// Create/Overwrite the resource file
-		std::ofstream ofs(sFile, std::ofstream::binary);
-		if (!ofs.is_open()) return false;
-
-		// Iterate through map
-		uint32_t nIndexSize = 0; // Unknown for now
-		ofs.write((char*)&nIndexSize, sizeof(uint32_t));
-		uint32_t nMapSize = mapFiles.size();
-		ofs.write((char*)&nMapSize, sizeof(uint32_t));
+		// 2) Read Data
 		for (auto &e : mapFiles)
 		{
-			// Write the path of the file
-			size_t nPathSize = e.first.size();
-			ofs.write((char*)&nPathSize, sizeof(uint32_t));
-			ofs.write(e.first.c_str(), nPathSize);
-
-			// Write the file entry properties
-			ofs.write((char*)&e.second.nSize, sizeof(uint32_t));
-			ofs.write((char*)&e.second.nOffset, sizeof(uint32_t));
+			e.second.data = new uint8_t[(uint32_t)e.second.nFileSize];
+			ifs.seekg(e.second.nFileOffset);
+			ifs.read((char*)e.second.data, e.second.nFileSize);
+			e.second._config();
 		}
 
-		// 2) Write the individual Data
-		std::streampos offset = ofs.tellp();
-		nIndexSize = (uint32_t)offset;
+		ifs.close();
+		return olc::OK;
+	}
+
+	olc::ResourcePack::sEntry ResourcePack::GetStreamBuffer(std::string sFile)
+	{
+		return mapFiles[sFile];
+	}
+
+	olc::rcode ResourcePack::ClearPack()
+	{
 		for (auto &e : mapFiles)
 		{
-			// Store beginning of file offset within resource pack file
-			e.second.nOffset = (uint32_t)offset;
-
-			// Load the file to be added
-			std::vector<char> vBuffer(e.second.nSize);
-			std::ifstream i(e.first, std::ifstream::binary);
-			i.read(vBuffer.data(), e.second.nSize);
-			i.close();
-
-			// Write the loaded file into resource pack file
-			ofs.write(vBuffer.data(), e.second.nSize);
-			offset += e.second.nSize;
+			if (e.second.data != nullptr)
+				delete[] e.second.data;
 		}
 
-		// 3) Scramble Index
-		std::stringstream oss;
-		oss.write((char*)&nMapSize, sizeof(uint32_t));
-		for (auto &e : mapFiles)
-		{
-			// Write the path of the file
-			size_t nPathSize = e.first.size();
-			oss.write((char*)&nPathSize, sizeof(uint32_t));
-			oss.write(e.first.c_str(), nPathSize);
-
-			// Write the file entry properties
-			oss.write((char*)&e.second.nSize, sizeof(uint32_t));
-			oss.write((char*)&e.second.nOffset, sizeof(uint32_t));
-		}
-		std::string sIndexString = scramble(oss.str(), sKey);
-
-		// 4) Rewrite Map (it has been updated with offsets now)
-		// at start of file
-		ofs.seekp(std::ios::beg);
-		ofs.write((char*)&nIndexSize, sizeof(uint32_t));
-		ofs.write(sIndexString.c_str(), nIndexSize);
-		ofs.close();
-		return true;
+		mapFiles.clear();
+		return olc::OK;
 	}
-
-	ResourceBuffer ResourcePack::GetFileBuffer(const std::string& sFile)
-	{
-		return ResourceBuffer(baseFile, mapFiles[sFile].nOffset, mapFiles[sFile].nSize);
-	}
-
-	bool ResourcePack::Loaded()
-	{
-		return baseFile.is_open();
-	}
-
-	const std::string ResourcePack::scramble(const std::string& data, const std::string& key)
-	{
-		size_t c = 0; std::string o;
-		for (auto s : data)	o += std::string(1, s ^ key[(c++) % key.size()]);
-		return o;
-	};
-
-	std::string ResourcePack::makeposix(const std::string& path)
-	{
-		std::string o;
-		for (auto s : path) o += std::string(1, s == '\\' ? '/' : s);
-		return o;
-	};
 
 	//==========================================================
 
-	retroGameEngine::retroGameEngine()
+	PixelGameEngine::PixelGameEngine()
 	{
 		sAppName = "Undefined";
-		jpr::RGEX::pge = this;
+		olc::PGEX::pge = this;
 	}
 
-	jpr::rcode retroGameEngine::Construct(uint32_t screen_w, uint32_t screen_h, uint32_t Retro_w, uint32_t Retro_h, bool full_screen, bool vsync)
+	olc::rcode PixelGameEngine::Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen, bool vsync)
 	{
 		nScreenWidth = screen_w;
 		nScreenHeight = screen_h;
-		nRetroWidth = Retro_w;
-		nRetroHeight = Retro_h;
+		nPixelWidth = pixel_w;
+		nPixelHeight = pixel_h;
 		bFullScreen = full_screen;
 		bEnableVSYNC = vsync;
 
-		fRetroX = 2.0f / (float)(nScreenWidth);
-		fRetroY = 2.0f / (float)(nScreenHeight);
+		fPixelX = 2.0f / (float)(nScreenWidth);
+		fPixelY = 2.0f / (float)(nScreenHeight);
 
-		if (nRetroWidth == 0 || nRetroHeight == 0 || nScreenWidth == 0 || nScreenHeight == 0)
-			return jpr::FAIL;
+		if (nPixelWidth == 0 || nPixelHeight == 0 || nScreenWidth == 0 || nScreenHeight == 0)
+			return olc::FAIL;
 
 #if defined(_WIN32) && defined(UNICODE) && !defined(__MINGW32__)
 		wsAppName = ConvertS2W(sAppName);
 #endif
 		// Load the default font sheet
-		jpr_ConstructFontSheet();
+		olc_ConstructFontSheet();
 
 		// Create a sprite that represents the primary drawing target
 		pDefaultDrawTarget = new Sprite(nScreenWidth, nScreenHeight);
 		SetDrawTarget(nullptr);
-		return jpr::OK;
+		return olc::OK;
 	}
 
 
-	void retroGameEngine::SetScreenSize(int w, int h)
+	void PixelGameEngine::SetScreenSize(int w, int h)
 	{
 		delete pDefaultDrawTarget;
 		nScreenWidth = w;
@@ -1072,22 +990,22 @@ namespace jpr
 #endif
 
 #if defined(__linux__)
-		glXSwapBuffers(jpr_Display, jpr_Window);
+		glXSwapBuffers(olc_Display, olc_Window);
 #endif
 
 		glClear(GL_COLOR_BUFFER_BIT);
-		jpr_UpdateViewport();
+		olc_UpdateViewport();
 	}
 
-	jpr::rcode retroGameEngine::Start()
+	olc::rcode PixelGameEngine::Start()
 	{
 		// Construct the window
-		if (!jpr_WindowCreate())
-			return jpr::FAIL;
+		if (!olc_WindowCreate())
+			return olc::FAIL;
 
 		// Start the thread
 		bAtomActive = true;
-		std::thread t = std::thread(&retroGameEngine::EngineThread, this);
+		std::thread t = std::thread(&PixelGameEngine::EngineThread, this);
 
 #if defined(_WIN32)
 		// Handle Windows Message Loop
@@ -1101,10 +1019,10 @@ namespace jpr
 
 		// Wait for thread to be exited
 		t.join();
-		return jpr::OK;
+		return olc::OK;
 	}
 
-	void retroGameEngine::SetDrawTarget(Sprite *target)
+	void PixelGameEngine::SetDrawTarget(Sprite *target)
 	{
 		if (target)
 			pDrawTarget = target;
@@ -1112,12 +1030,12 @@ namespace jpr
 			pDrawTarget = pDefaultDrawTarget;
 	}
 
-	Sprite* retroGameEngine::GetDrawTarget()
+	Sprite* PixelGameEngine::GetDrawTarget()
 	{
 		return pDrawTarget;
 	}
 
-	int32_t retroGameEngine::GetDrawTargetWidth()
+	int32_t PixelGameEngine::GetDrawTargetWidth()
 	{
 		if (pDrawTarget)
 			return pDrawTarget->width;
@@ -1125,7 +1043,7 @@ namespace jpr
 			return 0;
 	}
 
-	int32_t retroGameEngine::GetDrawTargetHeight()
+	int32_t PixelGameEngine::GetDrawTargetHeight()
 	{
 		if (pDrawTarget)
 			return pDrawTarget->height;
@@ -1133,94 +1051,88 @@ namespace jpr
 			return 0;
 	}
 
-	bool retroGameEngine::IsFocused()
+	bool PixelGameEngine::IsFocused()
 	{
 		return bHasInputFocus;
 	}
 
-	HWButton retroGameEngine::GetKey(Key k)
+	HWButton PixelGameEngine::GetKey(Key k)
 	{
 		return pKeyboardState[k];
 	}
 
-	HWButton retroGameEngine::GetMouse(uint32_t b)
+	HWButton PixelGameEngine::GetMouse(uint32_t b)
 	{
 		return pMouseState[b];
 	}
 
-	int32_t retroGameEngine::GetMouseX()
+	int32_t PixelGameEngine::GetMouseX()
 	{
 		return nMousePosX;
 	}
 
-	int32_t retroGameEngine::GetMouseY()
+	int32_t PixelGameEngine::GetMouseY()
 	{
 		return nMousePosY;
 	}
 
-	int32_t retroGameEngine::GetMouseWheel()
+	int32_t PixelGameEngine::GetMouseWheel()
 	{
 		return nMouseWheelDelta;
 	}
 
-	int32_t retroGameEngine::ScreenWidth()
+	int32_t PixelGameEngine::ScreenWidth()
 	{
 		return nScreenWidth;
 	}
 
-	int32_t retroGameEngine::ScreenHeight()
+	int32_t PixelGameEngine::ScreenHeight()
 	{
 		return nScreenHeight;
 	}
 
-	bool retroGameEngine::Draw(const jpr::vi2d& pos, Retro p)
-	{ return Draw(pos.x, pos.y, p); }
-
-	bool retroGameEngine::Draw(int32_t x, int32_t y, Retro p)
+	bool PixelGameEngine::Draw(int32_t x, int32_t y, Pixel p)
 	{
 		if (!pDrawTarget) return false;
 
 
-		if (nRetroMode == Retro::NORMAL)
+		if (nPixelMode == Pixel::NORMAL)
 		{
-			return pDrawTarget->SetRetro(x, y, p);
+			return pDrawTarget->SetPixel(x, y, p);
 		}
 
-		if (nRetroMode == Retro::MASK)
+		if (nPixelMode == Pixel::MASK)
 		{
 			if(p.a == 255)
-				return pDrawTarget->SetRetro(x, y, p);
+				return pDrawTarget->SetPixel(x, y, p);
 		}
 
-		if (nRetroMode == Retro::ALPHA)
+		if (nPixelMode == Pixel::ALPHA)
 		{
-			Retro d = pDrawTarget->GetRetro(x, y);
+			Pixel d = pDrawTarget->GetPixel(x, y);
 			float a = (float)(p.a / 255.0f) * fBlendFactor;
 			float c = 1.0f - a;
 			float r = a * (float)p.r + c * (float)d.r;
 			float g = a * (float)p.g + c * (float)d.g;
 			float b = a * (float)p.b + c * (float)d.b;
-			return pDrawTarget->SetRetro(x, y, Retro((uint8_t)r, (uint8_t)g, (uint8_t)b));
+			return pDrawTarget->SetPixel(x, y, Pixel((uint8_t)r, (uint8_t)g, (uint8_t)b));
 		}
 
-		if (nRetroMode == Retro::CUSTOM)
+		if (nPixelMode == Pixel::CUSTOM)
 		{
-			return pDrawTarget->SetRetro(x, y, funcRetroMode(x, y, p, pDrawTarget->GetRetro(x, y)));
+			return pDrawTarget->SetPixel(x, y, funcPixelMode(x, y, p, pDrawTarget->GetPixel(x, y)));
 		}
 
 		return false;
 	}
 
-	void retroGameEngine::SetSubRetroOffset(float ox, float oy)
+	void PixelGameEngine::SetSubPixelOffset(float ox, float oy)
 	{
-		fSubRetroOffsetX = ox * fRetroX;
-		fSubRetroOffsetY = oy * fRetroY;
+		fSubPixelOffsetX = ox * fPixelX;
+		fSubPixelOffsetY = oy * fPixelY;
 	}
 
-	void retroGameEngine::DrawLine(const jpr::vi2d& pos1, const jpr::vi2d& pos2, Retro p, uint32_t pattern)
-	{ DrawLine(pos1.x, pos1.y, pos2.x, pos2.y, p, pattern);	}
-
-	void retroGameEngine::DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, Retro p, uint32_t pattern)
+	void PixelGameEngine::DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, Pixel p, uint32_t pattern)
 	{
 		int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
 		dx = x2 - x1; dy = y2 - y1;
@@ -1305,10 +1217,7 @@ namespace jpr
 		}
 	}
 
-	void retroGameEngine::DrawCircle(const jpr::vi2d& pos, int32_t radius, Retro p, uint8_t mask)
-	{ DrawCircle(pos.x, pos.y, radius, p, mask);}
-
-	void retroGameEngine::DrawCircle(int32_t x, int32_t y, int32_t radius, Retro p, uint8_t mask)
+	void PixelGameEngine::DrawCircle(int32_t x, int32_t y, int32_t radius, Pixel p, uint8_t mask)
 	{
 		int x0 = 0;
 		int y0 = radius;
@@ -1330,10 +1239,7 @@ namespace jpr
 		}
 	}
 
-	void retroGameEngine::FillCircle(const jpr::vi2d& pos, int32_t radius, Retro p)
-	{ FillCircle(pos.x, pos.y, radius, p); }
-
-	void retroGameEngine::FillCircle(int32_t x, int32_t y, int32_t radius, Retro p)
+	void PixelGameEngine::FillCircle(int32_t x, int32_t y, int32_t radius, Pixel p)
 	{
 		// Taken from wikipedia
 		int x0 = 0;
@@ -1359,10 +1265,7 @@ namespace jpr
 		}
 	}
 
-	void retroGameEngine::DrawRect(const jpr::vi2d& pos, const jpr::vi2d& size, Retro p)
-	{ DrawRect(pos.x, pos.y, size.x, size.y, p); }
-
-	void retroGameEngine::DrawRect(int32_t x, int32_t y, int32_t w, int32_t h, Retro p)
+	void PixelGameEngine::DrawRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p)
 	{
 		DrawLine(x, y, x+w, y, p);
 		DrawLine(x+w, y, x+w, y+h, p);
@@ -1370,55 +1273,46 @@ namespace jpr
 		DrawLine(x, y+h, x, y, p);
 	}
 
-	void retroGameEngine::Clear(Retro p)
+	void PixelGameEngine::Clear(Pixel p)
 	{
-		int spaces = GetDrawTargetWidth() * GetDrawTargetHeight();
-		Retro* m = GetDrawTarget()->GetData();
-		for (int i = 0; i < spaces; i++)
+		int pixels = GetDrawTargetWidth() * GetDrawTargetHeight();
+		Pixel* m = GetDrawTarget()->GetData();
+		for (int i = 0; i < pixels; i++)
 			m[i] = p;
-#ifdef jpr_DBG_OVERDRAW
-		jpr::Sprite::nOverdrawCount += spaces;
+#ifdef OLC_DBG_OVERDRAW
+		olc::Sprite::nOverdrawCount += pixels;
 #endif
 	}
 
-	void retroGameEngine::FillRect(const jpr::vi2d& pos, const jpr::vi2d& size, Retro p)
-	{ FillRect(pos.x, pos.y, size.x, size.y, p); }
-
-	void retroGameEngine::FillRect(int32_t x, int32_t y, int32_t w, int32_t h, Retro p)
+	void PixelGameEngine::FillRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p)
 	{
 		int32_t x2 = x + w;
 		int32_t y2 = y + h;
 
 		if (x < 0) x = 0;
-		if (x >= (int32_t)GetDrawTargetWidth()) x = (int32_t)GetDrawTargetWidth();
+		if (x >= (int32_t)nScreenWidth) x = (int32_t)nScreenWidth;
 		if (y < 0) y = 0;
-		if (y >= (int32_t)GetDrawTargetHeight()) y = (int32_t)GetDrawTargetHeight();
+		if (y >= (int32_t)nScreenHeight) y = (int32_t)nScreenHeight;
 
 		if (x2 < 0) x2 = 0;
-		if (x2 >= (int32_t)GetDrawTargetWidth()) x2 = (int32_t)GetDrawTargetWidth();
+		if (x2 >= (int32_t)nScreenWidth) x2 = (int32_t)nScreenWidth;
 		if (y2 < 0) y2 = 0;
-		if (y2 >= (int32_t)GetDrawTargetHeight()) y2 = (int32_t)GetDrawTargetHeight();
+		if (y2 >= (int32_t)nScreenHeight) y2 = (int32_t)nScreenHeight;
 
 		for (int i = x; i < x2; i++)
 			for (int j = y; j < y2; j++)
 				Draw(i, j, p);
 	}
 
-	void retroGameEngine::DrawTriangle(const jpr::vi2d& pos1, const jpr::vi2d& pos2, const jpr::vi2d& pos3, Retro p)
-	{ DrawTriangle(pos1.x, pos1.y, pos2.x, pos2.y, pos3.x, pos3.y, p); }
-
-	void retroGameEngine::DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Retro p)
+	void PixelGameEngine::DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p)
 	{
 		DrawLine(x1, y1, x2, y2, p);
 		DrawLine(x2, y2, x3, y3, p);
 		DrawLine(x3, y3, x1, y1, p);
 	}
 
-	void retroGameEngine::FillTriangle(const jpr::vi2d& pos1, const jpr::vi2d& pos2, const jpr::vi2d& pos3, Retro p)
-	{ FillTriangle(pos1.x, pos1.y, pos2.x, pos2.y, pos3.x, pos3.y, p); }
-
 	// https://www.avrfreaks.net/sites/default/files/triangles.c
-	void retroGameEngine::FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Retro p)
+	void PixelGameEngine::FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p)
 	{
 		auto SWAP = [](int &x, int &y) { int t = x; x = y; y = t; };
 		auto drawline = [&](int sx, int ex, int ny) { for (int i = sx; i <= ex; i++) Draw(i, ny, p); };
@@ -1559,10 +1453,7 @@ namespace jpr
 		}
 	}
 
-	void retroGameEngine::DrawSprite(const jpr::vi2d& pos, Sprite *sprite, uint32_t scale)
-	{ DrawSprite(pos.x, pos.y, sprite, scale); }
-
-	void retroGameEngine::DrawSprite(int32_t x, int32_t y, Sprite *sprite, uint32_t scale)
+	void PixelGameEngine::DrawSprite(int32_t x, int32_t y, Sprite *sprite, uint32_t scale)
 	{
 		if (sprite == nullptr)
 			return;
@@ -1573,20 +1464,17 @@ namespace jpr
 				for (int32_t j = 0; j < sprite->height; j++)
 					for (uint32_t is = 0; is < scale; is++)
 						for (uint32_t js = 0; js < scale; js++)
-							Draw(x + (i*scale) + is, y + (j*scale) + js, sprite->GetRetro(i, j));
+							Draw(x + (i*scale) + is, y + (j*scale) + js, sprite->GetPixel(i, j));
 		}
 		else
 		{
 			for (int32_t i = 0; i < sprite->width; i++)
 				for (int32_t j = 0; j < sprite->height; j++)
-					Draw(x + i, y + j, sprite->GetRetro(i, j));
+					Draw(x + i, y + j, sprite->GetPixel(i, j));
 		}
 	}
 
-	void retroGameEngine::DrawPartialSprite(const jpr::vi2d& pos, Sprite *sprite, const jpr::vi2d& sourcepos, const jpr::vi2d& size, uint32_t scale)
-	{ DrawPartialSprite(pos.x, pos.y, sprite, sourcepos.x, sourcepos.y, size.x, size.y, scale); }
-
-	void retroGameEngine::DrawPartialSprite(int32_t x, int32_t y, Sprite *sprite, int32_t ox, int32_t oy, int32_t w, int32_t h, uint32_t scale)
+	void PixelGameEngine::DrawPartialSprite(int32_t x, int32_t y, Sprite *sprite, int32_t ox, int32_t oy, int32_t w, int32_t h, uint32_t scale)
 	{
 		if (sprite == nullptr)
 			return;
@@ -1597,26 +1485,23 @@ namespace jpr
 				for (int32_t j = 0; j < h; j++)
 					for (uint32_t is = 0; is < scale; is++)
 						for (uint32_t js = 0; js < scale; js++)
-							Draw(x + (i*scale) + is, y + (j*scale) + js, sprite->GetRetro(i + ox, j + oy));
+							Draw(x + (i*scale) + is, y + (j*scale) + js, sprite->GetPixel(i + ox, j + oy));
 		}
 		else
 		{
 			for (int32_t i = 0; i < w; i++)
 				for (int32_t j = 0; j < h; j++)
-					Draw(x + i, y + j, sprite->GetRetro(i + ox, j + oy));
+					Draw(x + i, y + j, sprite->GetPixel(i + ox, j + oy));
 		}
 	}
 
-	void retroGameEngine::DrawString(const jpr::vi2d& pos, const std::string& sText, Retro col, uint32_t scale)
-	{ DrawString(pos.x, pos.y, sText, col, scale); }
-
-	void retroGameEngine::DrawString(int32_t x, int32_t y, const std::string& sText, Retro col, uint32_t scale)
+	void PixelGameEngine::DrawString(int32_t x, int32_t y, std::string sText, Pixel col, uint32_t scale)
 	{
 		int32_t sx = 0;
 		int32_t sy = 0;
-		Retro::Mode m = nRetroMode;
-		if(col.ALPHA != 255)	SetRetroMode(Retro::ALPHA);
-		else					SetRetroMode(Retro::MASK);
+		Pixel::Mode m = nPixelMode;
+		if(col.ALPHA != 255)	SetPixelMode(Pixel::ALPHA);
+		else					SetPixelMode(Pixel::MASK);
 		for (auto c : sText)
 		{
 			if (c == '\n')
@@ -1632,7 +1517,7 @@ namespace jpr
 				{
 					for (uint32_t i = 0; i < 8; i++)
 						for (uint32_t j = 0; j < 8; j++)
-							if (fontSprite->GetRetro(i + ox * 8, j + oy * 8).r > 0)
+							if (fontSprite->GetPixel(i + ox * 8, j + oy * 8).r > 0)
 								for (uint32_t is = 0; is < scale; is++)
 									for (uint32_t js = 0; js < scale; js++)
 										Draw(x + sx + (i*scale) + is, y + sy + (j*scale) + js, col);
@@ -1641,32 +1526,32 @@ namespace jpr
 				{
 					for (uint32_t i = 0; i < 8; i++)
 						for (uint32_t j = 0; j < 8; j++)
-							if (fontSprite->GetRetro(i + ox * 8, j + oy * 8).r > 0)
+							if (fontSprite->GetPixel(i + ox * 8, j + oy * 8).r > 0)
 								Draw(x + sx + i, y + sy + j, col);
 				}
 				sx += 8 * scale;
 			}
 		}
-		SetRetroMode(m);
+		SetPixelMode(m);
 	}
 
-	void retroGameEngine::SetRetroMode(Retro::Mode m)
+	void PixelGameEngine::SetPixelMode(Pixel::Mode m)
 	{
-		nRetroMode = m;
+		nPixelMode = m;
 	}
 
-	Retro::Mode retroGameEngine::GetRetroMode()
+	Pixel::Mode PixelGameEngine::GetPixelMode()
 	{
-		return nRetroMode;
+		return nPixelMode;
 	}
 
-	void retroGameEngine::SetRetroMode(std::function<jpr::Retro(const int x, const int y, const jpr::Retro&, const jpr::Retro&)> RetroMode)
+	void PixelGameEngine::SetPixelMode(std::function<olc::Pixel(const int x, const int y, const olc::Pixel&, const olc::Pixel&)> pixelMode)
 	{
-		funcRetroMode = RetroMode;
-		nRetroMode = Retro::Mode::CUSTOM;
+		funcPixelMode = pixelMode;
+		nPixelMode = Pixel::Mode::CUSTOM;
 	}
 
-	void retroGameEngine::SetRetroBlend(float fBlend)
+	void PixelGameEngine::SetPixelBlend(float fBlend)
 	{
 		fBlendFactor = fBlend;
 		if (fBlendFactor < 0.0f) fBlendFactor = 0.0f;
@@ -1676,18 +1561,18 @@ namespace jpr
 	// User must override these functions as required. I have not made
 	// them abstract because I do need a default behaviour to occur if
 	// they are not overwritten
-	bool retroGameEngine::OnUserCreate()
+	bool PixelGameEngine::OnUserCreate()
 	{ return false; }
-	bool retroGameEngine::OnUserUpdate(float fElapsedTime)
+	bool PixelGameEngine::OnUserUpdate(float fElapsedTime)
 	{ UNUSED(fElapsedTime);  return false; }
-	bool retroGameEngine::OnUserDestroy()
+	bool PixelGameEngine::OnUserDestroy()
 	{ return true; }
 	//////////////////////////////////////////////////////////////////
 
-	void retroGameEngine::jpr_UpdateViewport()
+	void PixelGameEngine::olc_UpdateViewport()
 	{
-		int32_t ww = nScreenWidth * nRetroWidth;
-		int32_t wh = nScreenHeight * nRetroHeight;
+		int32_t ww = nScreenWidth * nPixelWidth;
+		int32_t wh = nScreenHeight * nPixelHeight;
 		float wasp = (float)ww / (float)wh;
 
 		nViewW = (int32_t)nWindowWidth;
@@ -1703,22 +1588,23 @@ namespace jpr
 		nViewY = (nWindowHeight - nViewH) / 2;
 	}
 
-	void retroGameEngine::jpr_UpdateWindowSize(int32_t x, int32_t y)
+	void PixelGameEngine::olc_UpdateWindowSize(int32_t x, int32_t y)
 	{
 		nWindowWidth = x;
 		nWindowHeight = y;
-		jpr_UpdateViewport();
+		olc_UpdateViewport();
+
 	}
 
-	void retroGameEngine::jpr_UpdateMouseWheel(int32_t delta)
+	void PixelGameEngine::olc_UpdateMouseWheel(int32_t delta)
 	{
 		nMouseWheelDeltaCache += delta;
 	}
 
-	void retroGameEngine::jpr_UpdateMouse(int32_t x, int32_t y)
+	void PixelGameEngine::olc_UpdateMouse(int32_t x, int32_t y)
 	{
 		// Mouse coords come in screen space
-		// But leave in Retro space
+		// But leave in pixel space
 
 		// Full Screen mode may have a weird viewport we must clamp to
 		x -= nViewX;
@@ -1738,10 +1624,10 @@ namespace jpr
 			nMousePosYcache = 0;
 	}
 
-	void retroGameEngine::EngineThread()
+	void PixelGameEngine::EngineThread()
 	{
 		// Start OpenGL, the context is owned by the game thread
-		jpr_OpenGLCreate();
+		olc_OpenGLCreate();
 
 		// Create Screen Texture - disable filtering
 		glEnable(GL_TEXTURE_2D);
@@ -1750,7 +1636,9 @@ namespace jpr
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, nScreenWidth, nScreenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pDefaultDrawTarget->GetData());
+
 
 		// Create user resources as part of this thread
 		if (!OnUserCreate())
@@ -1777,17 +1665,17 @@ namespace jpr
 				// same thread that OpenGL was created so we dont
 				// need to worry too much about multithreading with X11
 				XEvent xev;
-				while (XPending(jpr_Display))
+				while (XPending(olc_Display))
 				{
-					XNextEvent(jpr_Display, &xev);
+					XNextEvent(olc_Display, &xev);
 					if (xev.type == Expose)
 					{
 						XWindowAttributes gwa;
-						XGetWindowAttributes(jpr_Display, jpr_Window, &gwa);
+						XGetWindowAttributes(olc_Display, olc_Window, &gwa);
 						nWindowWidth = gwa.width;
 						nWindowHeight = gwa.height;
-						jpr_UpdateViewport();
-						glClear(GL_COLOR_BUFFER_BIT);
+						olc_UpdateViewport();
+						glClear(GL_COLOR_BUFFER_BIT); // Thanks Benedani!
 					}
 					else if (xev.type == ConfigureNotify)
 					{
@@ -1799,7 +1687,7 @@ namespace jpr
 					{
 						KeySym sym = XLookupKeysym(&xev.xkey, 0);
 						pKeyNewState[mapKeys[sym]] = true;
-						XKeyEvent *e = (XKeyEvent *)&xev;
+						XKeyEvent *e = (XKeyEvent *)&xev; // Because DragonEye loves numpads
 						XLookupString(e, NULL, 0, &sym, NULL);
 						pKeyNewState[mapKeys[sym]] = true;
 					}
@@ -1818,8 +1706,8 @@ namespace jpr
 						case 1:	pMouseNewState[0] = true; break;
 						case 2:	pMouseNewState[2] = true; break;
 						case 3:	pMouseNewState[1] = true; break;
-						case 4:	jpr_UpdateMouseWheel(120); break;
-						case 5:	jpr_UpdateMouseWheel(-120); break;
+						case 4:	olc_UpdateMouseWheel(120); break;
+						case 5:	olc_UpdateMouseWheel(-120); break;
 						default: break;
 						}
 					}
@@ -1835,7 +1723,7 @@ namespace jpr
 					}
 					else if (xev.type == MotionNotify)
 					{
-						jpr_UpdateMouse(xev.xmotion.x, xev.xmotion.y);
+						olc_UpdateMouse(xev.xmotion.x, xev.xmotion.y);
 					}
 					else if (xev.type == FocusIn)
 					{
@@ -1906,8 +1794,8 @@ namespace jpr
 				nMouseWheelDelta = nMouseWheelDeltaCache;
 				nMouseWheelDeltaCache = 0;
 
-#ifdef jpr_DBG_OVERDRAW
-				jpr::Sprite::nOverdrawCount = 0;
+#ifdef OLC_DBG_OVERDRAW
+				olc::Sprite::nOverdrawCount = 0;
 #endif
 
 				// Handle Frame Update
@@ -1918,15 +1806,15 @@ namespace jpr
 				glViewport(nViewX, nViewY, nViewW, nViewH);
 
 				// TODO: This is a bit slow (especially in debug, but 100x faster in release mode???)
-				// Copy Retro array into texture
+				// Copy pixel array into texture
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, nScreenWidth, nScreenHeight, GL_RGBA, GL_UNSIGNED_BYTE, pDefaultDrawTarget->GetData());
 
 				// Display texture on screen
 				glBegin(GL_QUADS);
-					glTexCoord2f(0.0, 1.0); glVertex3f(-1.0f + (fSubRetroOffsetX), -1.0f + (fSubRetroOffsetY), 0.0f);
-					glTexCoord2f(0.0, 0.0); glVertex3f(-1.0f + (fSubRetroOffsetX),  1.0f + (fSubRetroOffsetY), 0.0f);
-					glTexCoord2f(1.0, 0.0); glVertex3f( 1.0f + (fSubRetroOffsetX),  1.0f + (fSubRetroOffsetY), 0.0f);
-					glTexCoord2f(1.0, 1.0); glVertex3f( 1.0f + (fSubRetroOffsetX), -1.0f + (fSubRetroOffsetY), 0.0f);
+					glTexCoord2f(0.0, 1.0); glVertex3f(-1.0f + (fSubPixelOffsetX), -1.0f + (fSubPixelOffsetY), 0.0f);
+					glTexCoord2f(0.0, 0.0); glVertex3f(-1.0f + (fSubPixelOffsetX),  1.0f + (fSubPixelOffsetY), 0.0f);
+					glTexCoord2f(1.0, 0.0); glVertex3f( 1.0f + (fSubPixelOffsetX),  1.0f + (fSubPixelOffsetY), 0.0f);
+					glTexCoord2f(1.0, 1.0); glVertex3f( 1.0f + (fSubPixelOffsetX), -1.0f + (fSubPixelOffsetY), 0.0f);
 				glEnd();
 
 				// Present Graphics to screen
@@ -1935,7 +1823,7 @@ namespace jpr
 #endif
 
 #if defined(__linux__)
-				glXSwapBuffers(jpr_Display, jpr_Window);
+				glXSwapBuffers(olc_Display, olc_Window);
 #endif
 
 				// Update Title Bar
@@ -1945,17 +1833,17 @@ namespace jpr
 				{
 					fFrameTimer -= 1.0f;
 
-					std::string sTitle = "jpromanonet - retroGameEngine - " + sAppName + " - FPS: " + std::to_string(nFrameCount);
+					std::string sTitle = "OneLoneCoder.com - Pixel Game Engine - " + sAppName + " - FPS: " + std::to_string(nFrameCount);
 #if defined(_WIN32)
 #ifdef UNICODE
-					SetWindowText(jpr_hWnd, ConvertS2W(sTitle).c_str());
+					SetWindowText(olc_hWnd, ConvertS2W(sTitle).c_str());
 #else
-					SetWindowText(jpr_hWnd, sTitle.c_str());
+					SetWindowText(olc_hWnd, sTitle.c_str());
 #endif
 #endif
 
 #if defined (__linux__)
-					XStoreName(jpr_Display, jpr_Window, sTitle.c_str());
+					XStoreName(olc_Display, olc_Window, sTitle.c_str());
 #endif
 					nFrameCount = 0;
 				}
@@ -1975,20 +1863,20 @@ namespace jpr
 
 #if defined(_WIN32)
 		wglDeleteContext(glRenderContext);
-		PostMessage(jpr_hWnd, WM_DESTROY, 0, 0);
+		PostMessage(olc_hWnd, WM_DESTROY, 0, 0);
 #endif
 
 #if defined (__linux__)
-		glXMakeCurrent(jpr_Display, None, NULL);
-		glXDestroyContext(jpr_Display, glDeviceContext);
-		XDestroyWindow(jpr_Display, jpr_Window);
-		XCloseDisplay(jpr_Display);
+		glXMakeCurrent(olc_Display, None, NULL);
+		glXDestroyContext(olc_Display, glDeviceContext);
+		XDestroyWindow(olc_Display, olc_Window);
+		XCloseDisplay(olc_Display);
 #endif
 
 	}
 
 #if defined (_WIN32)
-	// Allows sprites to be defined
+	// Thanks @MaGetzUb for this, which allows sprites to be defined
 	// at construction, by initialising the GDI subsystem
 	static class GDIPlusStartup
 	{
@@ -2003,7 +1891,7 @@ namespace jpr
 #endif
 
 
-	void retroGameEngine::jpr_ConstructFontSheet()
+	void PixelGameEngine::olc_ConstructFontSheet()
 	{
 		std::string data;
 		data += "?Q`0001oOch0o01o@F40o0<AGD4090LAGD<090@A7ch0?00O7Q`0600>00000000";
@@ -2023,7 +1911,7 @@ namespace jpr
 		data += "O`000P08Od400g`<3V=P0G`673IP0`@3>1`00P@6O`P00g`<O`000GP800000000";
 		data += "?P9PL020O`<`N3R0@E4HC7b0@ET<ATB0@@l6C4B0O`H3N7b0?P01L3R000000020";
 
-		fontSprite = new jpr::Sprite(128, 48);
+		fontSprite = new olc::Sprite(128, 48);
 		int px = 0, py = 0;
 		for (int b = 0; b < 1024; b += 4)
 		{
@@ -2036,35 +1924,35 @@ namespace jpr
 			for (int i = 0; i < 24; i++)
 			{
 				int k = r & (1 << i) ? 255 : 0;
-				fontSprite->SetRetro(px, py, jpr::Retro(k, k, k, k));
+				fontSprite->SetPixel(px, py, olc::Pixel(k, k, k, k));
 				if (++py == 48) { px++; py = 0; }
 			}
 		}
 	}
 
 #if defined(_WIN32)
-	HWND retroGameEngine::jpr_WindowCreate()
+	HWND PixelGameEngine::olc_WindowCreate()
 	{
 		WNDCLASS wc;
 		wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 		wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 		wc.hInstance = GetModuleHandle(nullptr);
-		wc.lpfnWndProc = jpr_WindowEvent;
+		wc.lpfnWndProc = olc_WindowEvent;
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = 0;
 		wc.lpszMenuName = nullptr;
 		wc.hbrBackground = nullptr;
 #ifdef UNICODE
-		wc.lpszClassName = L"jpr_Retro_GAME_ENGINE";
+		wc.lpszClassName = L"OLC_PIXEL_GAME_ENGINE";
 #else
-		wc.lpszClassName = "jpr_Retro_GAME_ENGINE";
+		wc.lpszClassName = "OLC_PIXEL_GAME_ENGINE";
 #endif
 
 		RegisterClass(&wc);
 
-		nWindowWidth = (LONG)nScreenWidth * (LONG)nRetroWidth;
-		nWindowHeight = (LONG)nScreenHeight * (LONG)nRetroHeight;
+		nWindowWidth = (LONG)nScreenWidth * (LONG)nPixelWidth;
+		nWindowHeight = (LONG)nScreenHeight * (LONG)nPixelHeight;
 
 		// Define window furniture
 		DWORD dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
@@ -2080,7 +1968,7 @@ namespace jpr
 			dwExStyle = 0;
 			dwStyle = WS_VISIBLE | WS_POPUP;
 			nCosmeticOffset = 0;
-			HMONITOR hmon = MonitorFromWindow(jpr_hWnd, MONITOR_DEFAULTTONEAREST);
+			HMONITOR hmon = MonitorFromWindow(olc_hWnd, MONITOR_DEFAULTTONEAREST);
 			MONITORINFO mi = { sizeof(mi) };
 			if (!GetMonitorInfo(hmon, &mi)) return NULL;
 			nWindowWidth = mi.rcMonitor.right;
@@ -2089,7 +1977,7 @@ namespace jpr
 
 		}
 
-		jpr_UpdateViewport();
+		olc_UpdateViewport();
 
 		// Keep client size as requested
 		RECT rWndRect = { 0, 0, nWindowWidth, nWindowHeight };
@@ -2098,10 +1986,10 @@ namespace jpr
 		int height = rWndRect.bottom - rWndRect.top;
 
 #ifdef UNICODE
-		jpr_hWnd = CreateWindowEx(dwExStyle, L"jpr_Retro_GAME_ENGINE", L"", dwStyle,
+		olc_hWnd = CreateWindowEx(dwExStyle, L"OLC_PIXEL_GAME_ENGINE", L"", dwStyle,
 			nCosmeticOffset, nCosmeticOffset, width, height, NULL, NULL, GetModuleHandle(nullptr), this);
 #else
-		jpr_hWnd = CreateWindowEx(dwExStyle, "jpr_Retro_GAME_ENGINE", "", dwStyle,
+		olc_hWnd = CreateWindowEx(dwExStyle, "OLC_PIXEL_GAME_ENGINE", "", dwStyle,
 			nCosmeticOffset, nCosmeticOffset, width, height, NULL, NULL, GetModuleHandle(nullptr), this);
 #endif
 
@@ -2134,24 +2022,24 @@ namespace jpr
 		mapKeys[VK_NUMPAD5] = Key::NP5; mapKeys[VK_NUMPAD6] = Key::NP6; mapKeys[VK_NUMPAD7] = Key::NP7; mapKeys[VK_NUMPAD8] = Key::NP8; mapKeys[VK_NUMPAD9] = Key::NP9;
 		mapKeys[VK_MULTIPLY] = Key::NP_MUL; mapKeys[VK_ADD] = Key::NP_ADD; mapKeys[VK_DIVIDE] = Key::NP_DIV; mapKeys[VK_SUBTRACT] = Key::NP_SUB; mapKeys[VK_DECIMAL] = Key::NP_DECIMAL;
 
-		return jpr_hWnd;
+		return olc_hWnd;
 	}
 
-	bool retroGameEngine::jpr_OpenGLCreate()
+	bool PixelGameEngine::olc_OpenGLCreate()
 	{
 		// Create Device Context
-		glDeviceContext = GetDC(jpr_hWnd);
-		RetroFORMATDESCRIPTOR pfd =
+		glDeviceContext = GetDC(olc_hWnd);
+		PIXELFORMATDESCRIPTOR pfd =
 		{
-			sizeof(RetroFORMATDESCRIPTOR), 1,
+			sizeof(PIXELFORMATDESCRIPTOR), 1,
 			PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
 			PFD_TYPE_RGBA, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 			PFD_MAIN_PLANE, 0, 0, 0, 0
 		};
 
 		int pf = 0;
-		if (!(pf = ChooseRetroFormat(glDeviceContext, &pfd))) return false;
-		SetRetroFormat(glDeviceContext, pf, &pfd);
+		if (!(pf = ChoosePixelFormat(glDeviceContext, &pfd))) return false;
+		SetPixelFormat(glDeviceContext, pf, &pfd);
 
 		if (!(glRenderContext = wglCreateContext(glDeviceContext))) return false;
 		wglMakeCurrent(glDeviceContext, glRenderContext);
@@ -2165,29 +2053,29 @@ namespace jpr
 	}
 
 	// Windows Event Handler
-	LRESULT CALLBACK retroGameEngine::jpr_WindowEvent(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK PixelGameEngine::olc_WindowEvent(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		static retroGameEngine *sge;
+		static PixelGameEngine *sge;
 		switch (uMsg)
 		{
-		case WM_CREATE:		sge = (retroGameEngine*)((LPCREATESTRUCT)lParam)->lpCreateParams;	return 0;
+		case WM_CREATE:		sge = (PixelGameEngine*)((LPCREATESTRUCT)lParam)->lpCreateParams;	return 0;
 		case WM_MOUSEMOVE:
 		{
-			uint16_t x = lParam & 0xFFFF;
+			uint16_t x = lParam & 0xFFFF;				// Thanks @ForAbby (Discord)
 			uint16_t y = (lParam >> 16) & 0xFFFF;
 			int16_t ix = *(int16_t*)&x;
 			int16_t iy = *(int16_t*)&y;
-			sge->jpr_UpdateMouse(ix, iy);
+			sge->olc_UpdateMouse(ix, iy);
 			return 0;
 		}
 		case WM_SIZE:
 		{
-			sge->jpr_UpdateWindowSize(lParam & 0xFFFF, (lParam >> 16) & 0xFFFF);
+			sge->olc_UpdateWindowSize(lParam & 0xFFFF, (lParam >> 16) & 0xFFFF);
 			return 0;
 		}
 		case WM_MOUSEWHEEL:
 		{
-			sge->jpr_UpdateMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam));
+			sge->olc_UpdateMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam));
 			return 0;
 		}
 		case WM_MOUSELEAVE: sge->bHasMouseFocus = false;							return 0;
@@ -2210,56 +2098,56 @@ namespace jpr
 
 #if defined(__linux__)
 	// Do the Linux stuff!
-	Display* retroGameEngine::jpr_WindowCreate()
+	Display* PixelGameEngine::olc_WindowCreate()
 	{
 		XInitThreads();
 
 		// Grab the deafult display and window
-		jpr_Display		= XOpenDisplay(NULL);
-		jpr_WindowRoot	= DefaultRootWindow(jpr_Display);
+		olc_Display		= XOpenDisplay(NULL);
+		olc_WindowRoot	= DefaultRootWindow(olc_Display);
 
 		// Based on the display capabilities, configure the appearance of the window
-		GLint jpr_GLAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-		jpr_VisualInfo	= glXChooseVisual(jpr_Display, 0, jpr_GLAttribs);
-		jpr_ColourMap	= XCreateColormap(jpr_Display, jpr_WindowRoot, jpr_VisualInfo->visual, AllocNone);
-		jpr_SetWindowAttribs.colormap = jpr_ColourMap;
+		GLint olc_GLAttribs[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+		olc_VisualInfo	= glXChooseVisual(olc_Display, 0, olc_GLAttribs);
+		olc_ColourMap	= XCreateColormap(olc_Display, olc_WindowRoot, olc_VisualInfo->visual, AllocNone);
+		olc_SetWindowAttribs.colormap = olc_ColourMap;
 
 		// Register which events we are interested in receiving
-		jpr_SetWindowAttribs.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | FocusChangeMask | StructureNotifyMask;
+		olc_SetWindowAttribs.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | FocusChangeMask | StructureNotifyMask;
 
 		// Create the window
-		jpr_Window		= XCreateWindow(jpr_Display, jpr_WindowRoot, 30, 30, nScreenWidth * nRetroWidth, nScreenHeight * nRetroHeight, 0, jpr_VisualInfo->depth, InputOutput, jpr_VisualInfo->visual, CWColormap | CWEventMask, &jpr_SetWindowAttribs);
+		olc_Window		= XCreateWindow(olc_Display, olc_WindowRoot, 30, 30, nScreenWidth * nPixelWidth, nScreenHeight * nPixelHeight, 0, olc_VisualInfo->depth, InputOutput, olc_VisualInfo->visual, CWColormap | CWEventMask, &olc_SetWindowAttribs);
 
-		Atom wmDelete = XInternAtom(jpr_Display, "WM_DELETE_WINDOW", true);
-		XSetWMProtocols(jpr_Display, jpr_Window, &wmDelete, 1);
+		Atom wmDelete = XInternAtom(olc_Display, "WM_DELETE_WINDOW", true);
+		XSetWMProtocols(olc_Display, olc_Window, &wmDelete, 1);
 
-		XMapWindow(jpr_Display, jpr_Window);
-		XStoreName(jpr_Display, jpr_Window, "jpromanonet.net - retroGameEngine");
+		XMapWindow(olc_Display, olc_Window);
+		XStoreName(olc_Display, olc_Window, "OneLoneCoder.com - Pixel Game Engine");
 
-		if (bFullScreen)
+		if (bFullScreen) // Thanks DragonEye, again :D
 		{
 			Atom wm_state;
 			Atom fullscreen;
-			wm_state = XInternAtom(jpr_Display, "_NET_WM_STATE", False);
-			fullscreen = XInternAtom(jpr_Display, "_NET_WM_STATE_FULLSCREEN", False);
+			wm_state = XInternAtom(olc_Display, "_NET_WM_STATE", False);
+			fullscreen = XInternAtom(olc_Display, "_NET_WM_STATE_FULLSCREEN", False);
 			XEvent xev{ 0 };
 			xev.type = ClientMessage;
-			xev.xclient.window = jpr_Window;
+			xev.xclient.window = olc_Window;
 			xev.xclient.message_type = wm_state;
 			xev.xclient.format = 32;
 			xev.xclient.data.l[0] = (bFullScreen ? 1 : 0);   // the action (0: off, 1: on, 2: toggle)
 			xev.xclient.data.l[1] = fullscreen;             // first property to alter
 			xev.xclient.data.l[2] = 0;                      // second property to alter
 			xev.xclient.data.l[3] = 0;                      // source indication
-			XMapWindow(jpr_Display, jpr_Window);
-			XSendEvent(jpr_Display, DefaultRootWindow(jpr_Display), False,
+			XMapWindow(olc_Display, olc_Window);
+			XSendEvent(olc_Display, DefaultRootWindow(olc_Display), False,
 				SubstructureRedirectMask | SubstructureNotifyMask, &xev);
-			XFlush(jpr_Display);
+			XFlush(olc_Display);
 			XWindowAttributes gwa;
-			XGetWindowAttributes(jpr_Display, jpr_Window, &gwa);
+			XGetWindowAttributes(olc_Display, olc_Window, &gwa);
 			nWindowWidth = gwa.width;
 			nWindowHeight = gwa.height;
-			jpr_UpdateViewport();
+			olc_UpdateViewport();
 		}
 
 		// Create Keyboard Mapping
@@ -2291,16 +2179,16 @@ namespace jpr
 		mapKeys[XK_KP_5] = Key::NP5; mapKeys[XK_KP_6] = Key::NP6; mapKeys[XK_KP_7] = Key::NP7; mapKeys[XK_KP_8] = Key::NP8; mapKeys[XK_KP_9] = Key::NP9;
 		mapKeys[XK_KP_Multiply] = Key::NP_MUL; mapKeys[XK_KP_Add] = Key::NP_ADD; mapKeys[XK_KP_Divide] = Key::NP_DIV; mapKeys[XK_KP_Subtract] = Key::NP_SUB; mapKeys[XK_KP_Decimal] = Key::NP_DECIMAL;
 
-		return jpr_Display;
+		return olc_Display;
 	}
 
-	bool retroGameEngine::jpr_OpenGLCreate()
+	bool PixelGameEngine::olc_OpenGLCreate()
 	{
-		glDeviceContext = glXCreateContext(jpr_Display, jpr_VisualInfo, nullptr, GL_TRUE);
-		glXMakeCurrent(jpr_Display, jpr_Window, glDeviceContext);
+		glDeviceContext = glXCreateContext(olc_Display, olc_VisualInfo, nullptr, GL_TRUE);
+		glXMakeCurrent(olc_Display, olc_Window, glDeviceContext);
 
 		XWindowAttributes gwa;
-		XGetWindowAttributes(jpr_Display, jpr_Window, &gwa);
+		XGetWindowAttributes(olc_Display, olc_Window, &gwa);
 		glViewport(0, 0, gwa.width, gwa.height);
 
 		glSwapIntervalEXT = nullptr;
@@ -2314,7 +2202,7 @@ namespace jpr
 		}
 
 		if (glSwapIntervalEXT != nullptr && !bEnableVSYNC)
-			glSwapIntervalEXT(jpr_Display, jpr_Window, 0);
+			glSwapIntervalEXT(olc_Display, olc_Window, 0);
 		return true;
 	}
 
@@ -2322,11 +2210,11 @@ namespace jpr
 
 	// Need a couple of statics as these are singleton instances
 	// read from multiple locations
-	std::atomic<bool> retroGameEngine::bAtomActive{ false };
-	std::map<size_t, uint8_t> retroGameEngine::mapKeys;
-	jpr::retroGameEngine* jpr::RGEX::pge = nullptr;
-#ifdef jpr_DBG_OVERDRAW
-	int jpr::Sprite::nOverdrawCount = 0;
+	std::atomic<bool> PixelGameEngine::bAtomActive{ false };
+	std::map<size_t, uint8_t> PixelGameEngine::mapKeys;
+	olc::PixelGameEngine* olc::PGEX::pge = nullptr;
+#ifdef OLC_DBG_OVERDRAW
+	int olc::Sprite::nOverdrawCount = 0;
 #endif
 	//=============================================================
 }
