@@ -3,10 +3,10 @@
 // Let's change all Pixel, PGE, PGEX and PIXEL
 
 /* Example Usage (main.cpp)
-	#define JPR_RGEX_APPLICATION
+	#define JPR_PGE_APPLICATION
 	#include "retroGameEngine.h"
 	// Override base class with your custom functionality
-	class Example : public jpr::retroGameEngine
+	class Example : public jpr::RetroGameEngine
 	{
 	public:
 		Example()
@@ -24,7 +24,7 @@
 			// called once per frame, draws random coloured pixels
 			for (int x = 0; x < ScreenWidth(); x++)
 				for (int y = 0; y < ScreenHeight(); y++)
-					Draw(x, y, jpr::Retro(rand() % 255, rand() % 255, rand()% 255));
+					Draw(x, y, jpr::Pixel(rand() % 255, rand() % 255, rand()% 255));
 			return true;
 		}
 	};
@@ -37,8 +37,8 @@
 	}
 */
 
-#ifndef JPR_PGE_DEF
-#define JPR_PGE_DEF
+#ifndef JPR_RGE_DEF
+#define JPR_RGE_DEF
 
 #if defined(_WIN32) // WINDOWS specific includes ==============================================
 	// Link to libraries
@@ -102,7 +102,7 @@
 
 namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 {
-	struct Retro
+	struct Pixel
 	{
 		union
 		{
@@ -280,10 +280,10 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 
 	//=============================================================
 
-	class PixelGameEngine
+	class RetroGameEngine
 	{
 	public:
-		PixelGameEngine();
+		RetroGameEngine();
 
 	public:
 		jpr::rcode	Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen = false, bool vsync = false);
@@ -464,9 +464,9 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 
 	class PGEX
 	{
-		friend class jpr::PixelGameEngine;
+		friend class jpr::RetroGameEngine;
 	protected:
-		static PixelGameEngine* pge;
+		static RetroGameEngine* pge;
 	};
 
 	//=============================================================
@@ -483,20 +483,20 @@ namespace jpr // All OneLoneCoder stuff will now exist in the "jpr" namespace
 
 	If the retroGameEngine.h is called from several sources it can cause
 	multiple definitions of objects. To prevent this, ONLY ONE of the pathways
-	to including this file must have JPR_RGEX_APPLICATION defined before it. This prevents
+	to including this file must have JPR_PGE_APPLICATION defined before it. This prevents
 	the definitions being duplicated.
 
 	If all else fails, create a file called "retroGameEngine.cpp" with the following
 	two lines. Then you can just #include "retroGameEngine.h" as normal without worrying
 	about defining things. Dont forget to include that cpp file as part of your build!
 
-	#define JPR_RGEX_APPLICATION
+	#define JPR_PGE_APPLICATION
 	#include "retroGameEngine.h"
 
 */
 
-#ifdef JPR_RGEX_APPLICATION
-#undef JPR_RGEX_APPLICATION
+#ifdef JPR_PGE_APPLICATION
+#undef JPR_PGE_APPLICATION
 
 namespace jpr
 {
@@ -944,13 +944,13 @@ namespace jpr
 
 	//==========================================================
 
-	PixelGameEngine::PixelGameEngine()
+	RetroGameEngine::RetroGameEngine()
 	{
 		sAppName = "Undefined";
 		jpr::PGEX::pge = this;
 	}
 
-	jpr::rcode PixelGameEngine::Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen, bool vsync)
+	jpr::rcode RetroGameEngine::Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen, bool vsync)
 	{
 		nScreenWidth = screen_w;
 		nScreenHeight = screen_h;
@@ -978,7 +978,7 @@ namespace jpr
 	}
 
 
-	void PixelGameEngine::SetScreenSize(int w, int h)
+	void RetroGameEngine::SetScreenSize(int w, int h)
 	{
 		delete pDefaultDrawTarget;
 		nScreenWidth = w;
@@ -999,7 +999,7 @@ namespace jpr
 		jpr_UpdateViewport();
 	}
 
-	jpr::rcode PixelGameEngine::Start()
+	jpr::rcode RetroGameEngine::Start()
 	{
 		// Construct the window
 		if (!jpr_WindowCreate())
@@ -1007,7 +1007,7 @@ namespace jpr
 
 		// Start the thread
 		bAtomActive = true;
-		std::thread t = std::thread(&PixelGameEngine::EngineThread, this);
+		std::thread t = std::thread(&RetroGameEngine::EngineThread, this);
 
 #if defined(_WIN32)
 		// Handle Windows Message Loop
@@ -1024,7 +1024,7 @@ namespace jpr
 		return jpr::OK;
 	}
 
-	void PixelGameEngine::SetDrawTarget(Sprite *target)
+	void RetroGameEngine::SetDrawTarget(Sprite *target)
 	{
 		if (target)
 			pDrawTarget = target;
@@ -1032,12 +1032,12 @@ namespace jpr
 			pDrawTarget = pDefaultDrawTarget;
 	}
 
-	Sprite* PixelGameEngine::GetDrawTarget()
+	Sprite* RetroGameEngine::GetDrawTarget()
 	{
 		return pDrawTarget;
 	}
 
-	int32_t PixelGameEngine::GetDrawTargetWidth()
+	int32_t RetroGameEngine::GetDrawTargetWidth()
 	{
 		if (pDrawTarget)
 			return pDrawTarget->width;
@@ -1045,7 +1045,7 @@ namespace jpr
 			return 0;
 	}
 
-	int32_t PixelGameEngine::GetDrawTargetHeight()
+	int32_t RetroGameEngine::GetDrawTargetHeight()
 	{
 		if (pDrawTarget)
 			return pDrawTarget->height;
@@ -1053,47 +1053,47 @@ namespace jpr
 			return 0;
 	}
 
-	bool PixelGameEngine::IsFocused()
+	bool RetroGameEngine::IsFocused()
 	{
 		return bHasInputFocus;
 	}
 
-	HWButton PixelGameEngine::GetKey(Key k)
+	HWButton RetroGameEngine::GetKey(Key k)
 	{
 		return pKeyboardState[k];
 	}
 
-	HWButton PixelGameEngine::GetMouse(uint32_t b)
+	HWButton RetroGameEngine::GetMouse(uint32_t b)
 	{
 		return pMouseState[b];
 	}
 
-	int32_t PixelGameEngine::GetMouseX()
+	int32_t RetroGameEngine::GetMouseX()
 	{
 		return nMousePosX;
 	}
 
-	int32_t PixelGameEngine::GetMouseY()
+	int32_t RetroGameEngine::GetMouseY()
 	{
 		return nMousePosY;
 	}
 
-	int32_t PixelGameEngine::GetMouseWheel()
+	int32_t RetroGameEngine::GetMouseWheel()
 	{
 		return nMouseWheelDelta;
 	}
 
-	int32_t PixelGameEngine::ScreenWidth()
+	int32_t RetroGameEngine::ScreenWidth()
 	{
 		return nScreenWidth;
 	}
 
-	int32_t PixelGameEngine::ScreenHeight()
+	int32_t RetroGameEngine::ScreenHeight()
 	{
 		return nScreenHeight;
 	}
 
-	bool PixelGameEngine::Draw(int32_t x, int32_t y, Pixel p)
+	bool RetroGameEngine::Draw(int32_t x, int32_t y, Pixel p)
 	{
 		if (!pDrawTarget) return false;
 
@@ -1128,13 +1128,13 @@ namespace jpr
 		return false;
 	}
 
-	void PixelGameEngine::SetSubPixelOffset(float ox, float oy)
+	void RetroGameEngine::SetSubPixelOffset(float ox, float oy)
 	{
 		fSubPixelOffsetX = ox * fPixelX;
 		fSubPixelOffsetY = oy * fPixelY;
 	}
 
-	void PixelGameEngine::DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, Pixel p, uint32_t pattern)
+	void RetroGameEngine::DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, Pixel p, uint32_t pattern)
 	{
 		int x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
 		dx = x2 - x1; dy = y2 - y1;
@@ -1219,7 +1219,7 @@ namespace jpr
 		}
 	}
 
-	void PixelGameEngine::DrawCircle(int32_t x, int32_t y, int32_t radius, Pixel p, uint8_t mask)
+	void RetroGameEngine::DrawCircle(int32_t x, int32_t y, int32_t radius, Pixel p, uint8_t mask)
 	{
 		int x0 = 0;
 		int y0 = radius;
@@ -1241,7 +1241,7 @@ namespace jpr
 		}
 	}
 
-	void PixelGameEngine::FillCircle(int32_t x, int32_t y, int32_t radius, Pixel p)
+	void RetroGameEngine::FillCircle(int32_t x, int32_t y, int32_t radius, Pixel p)
 	{
 		// Taken from wikipedia
 		int x0 = 0;
@@ -1267,7 +1267,7 @@ namespace jpr
 		}
 	}
 
-	void PixelGameEngine::DrawRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p)
+	void RetroGameEngine::DrawRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p)
 	{
 		DrawLine(x, y, x+w, y, p);
 		DrawLine(x+w, y, x+w, y+h, p);
@@ -1275,7 +1275,7 @@ namespace jpr
 		DrawLine(x, y+h, x, y, p);
 	}
 
-	void PixelGameEngine::Clear(Pixel p)
+	void RetroGameEngine::Clear(Pixel p)
 	{
 		int pixels = GetDrawTargetWidth() * GetDrawTargetHeight();
 		Pixel* m = GetDrawTarget()->GetData();
@@ -1286,7 +1286,7 @@ namespace jpr
 #endif
 	}
 
-	void PixelGameEngine::FillRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p)
+	void RetroGameEngine::FillRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p)
 	{
 		int32_t x2 = x + w;
 		int32_t y2 = y + h;
@@ -1306,7 +1306,7 @@ namespace jpr
 				Draw(i, j, p);
 	}
 
-	void PixelGameEngine::DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p)
+	void RetroGameEngine::DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p)
 	{
 		DrawLine(x1, y1, x2, y2, p);
 		DrawLine(x2, y2, x3, y3, p);
@@ -1314,7 +1314,7 @@ namespace jpr
 	}
 
 	// https://www.avrfreaks.net/sites/default/files/triangles.c
-	void PixelGameEngine::FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p)
+	void RetroGameEngine::FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p)
 	{
 		auto SWAP = [](int &x, int &y) { int t = x; x = y; y = t; };
 		auto drawline = [&](int sx, int ex, int ny) { for (int i = sx; i <= ex; i++) Draw(i, ny, p); };
@@ -1455,7 +1455,7 @@ namespace jpr
 		}
 	}
 
-	void PixelGameEngine::DrawSprite(int32_t x, int32_t y, Sprite *sprite, uint32_t scale)
+	void RetroGameEngine::DrawSprite(int32_t x, int32_t y, Sprite *sprite, uint32_t scale)
 	{
 		if (sprite == nullptr)
 			return;
@@ -1476,7 +1476,7 @@ namespace jpr
 		}
 	}
 
-	void PixelGameEngine::DrawPartialSprite(int32_t x, int32_t y, Sprite *sprite, int32_t ox, int32_t oy, int32_t w, int32_t h, uint32_t scale)
+	void RetroGameEngine::DrawPartialSprite(int32_t x, int32_t y, Sprite *sprite, int32_t ox, int32_t oy, int32_t w, int32_t h, uint32_t scale)
 	{
 		if (sprite == nullptr)
 			return;
@@ -1497,7 +1497,7 @@ namespace jpr
 		}
 	}
 
-	void PixelGameEngine::DrawString(int32_t x, int32_t y, std::string sText, Pixel col, uint32_t scale)
+	void RetroGameEngine::DrawString(int32_t x, int32_t y, std::string sText, Pixel col, uint32_t scale)
 	{
 		int32_t sx = 0;
 		int32_t sy = 0;
@@ -1537,23 +1537,23 @@ namespace jpr
 		SetPixelMode(m);
 	}
 
-	void PixelGameEngine::SetPixelMode(Pixel::Mode m)
+	void RetroGameEngine::SetPixelMode(Pixel::Mode m)
 	{
 		nPixelMode = m;
 	}
 
-	Pixel::Mode PixelGameEngine::GetPixelMode()
+	Pixel::Mode RetroGameEngine::GetPixelMode()
 	{
 		return nPixelMode;
 	}
 
-	void PixelGameEngine::SetPixelMode(std::function<jpr::Pixel(const int x, const int y, const jpr::Pixel&, const jpr::Pixel&)> pixelMode)
+	void RetroGameEngine::SetPixelMode(std::function<jpr::Pixel(const int x, const int y, const jpr::Pixel&, const jpr::Pixel&)> pixelMode)
 	{
 		funcPixelMode = pixelMode;
 		nPixelMode = Pixel::Mode::CUSTOM;
 	}
 
-	void PixelGameEngine::SetPixelBlend(float fBlend)
+	void RetroGameEngine::SetPixelBlend(float fBlend)
 	{
 		fBlendFactor = fBlend;
 		if (fBlendFactor < 0.0f) fBlendFactor = 0.0f;
@@ -1563,15 +1563,15 @@ namespace jpr
 	// User must override these functions as required. I have not made
 	// them abstract because I do need a default behaviour to occur if
 	// they are not overwritten
-	bool PixelGameEngine::OnUserCreate()
+	bool RetroGameEngine::OnUserCreate()
 	{ return false; }
-	bool PixelGameEngine::OnUserUpdate(float fElapsedTime)
+	bool RetroGameEngine::OnUserUpdate(float fElapsedTime)
 	{ UNUSED(fElapsedTime);  return false; }
-	bool PixelGameEngine::OnUserDestroy()
+	bool RetroGameEngine::OnUserDestroy()
 	{ return true; }
 	//////////////////////////////////////////////////////////////////
 
-	void PixelGameEngine::jpr_UpdateViewport()
+	void RetroGameEngine::jpr_UpdateViewport()
 	{
 		int32_t ww = nScreenWidth * nPixelWidth;
 		int32_t wh = nScreenHeight * nPixelHeight;
@@ -1590,7 +1590,7 @@ namespace jpr
 		nViewY = (nWindowHeight - nViewH) / 2;
 	}
 
-	void PixelGameEngine::jpr_UpdateWindowSize(int32_t x, int32_t y)
+	void RetroGameEngine::jpr_UpdateWindowSize(int32_t x, int32_t y)
 	{
 		nWindowWidth = x;
 		nWindowHeight = y;
@@ -1598,12 +1598,12 @@ namespace jpr
 
 	}
 
-	void PixelGameEngine::jpr_UpdateMouseWheel(int32_t delta)
+	void RetroGameEngine::jpr_UpdateMouseWheel(int32_t delta)
 	{
 		nMouseWheelDeltaCache += delta;
 	}
 
-	void PixelGameEngine::jpr_UpdateMouse(int32_t x, int32_t y)
+	void RetroGameEngine::jpr_UpdateMouse(int32_t x, int32_t y)
 	{
 		// Mouse coords come in screen space
 		// But leave in pixel space
@@ -1626,7 +1626,7 @@ namespace jpr
 			nMousePosYcache = 0;
 	}
 
-	void PixelGameEngine::EngineThread()
+	void RetroGameEngine::EngineThread()
 	{
 		// Start OpenGL, the context is owned by the game thread
 		jpr_OpenGLCreate();
@@ -1893,7 +1893,7 @@ namespace jpr
 #endif
 
 
-	void PixelGameEngine::jpr_ConstructFontSheet()
+	void RetroGameEngine::jpr_ConstructFontSheet()
 	{
 		std::string data;
 		data += "?Q`0001oOch0o01o@F40o0<AGD4090LAGD<090@A7ch0?00O7Q`0600>00000000";
@@ -1933,7 +1933,7 @@ namespace jpr
 	}
 
 #if defined(_WIN32)
-	HWND PixelGameEngine::jpr_WindowCreate()
+	HWND RetroGameEngine::jpr_WindowCreate()
 	{
 		WNDCLASS wc;
 		wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
@@ -2027,7 +2027,7 @@ namespace jpr
 		return jpr_hWnd;
 	}
 
-	bool PixelGameEngine::jpr_OpenGLCreate()
+	bool RetroGameEngine::jpr_OpenGLCreate()
 	{
 		// Create Device Context
 		glDeviceContext = GetDC(jpr_hWnd);
@@ -2055,12 +2055,12 @@ namespace jpr
 	}
 
 	// Windows Event Handler
-	LRESULT CALLBACK PixelGameEngine::jpr_WindowEvent(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK RetroGameEngine::jpr_WindowEvent(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		static PixelGameEngine *sge;
+		static RetroGameEngine *sge;
 		switch (uMsg)
 		{
-		case WM_CREATE:		sge = (PixelGameEngine*)((LPCREATESTRUCT)lParam)->lpCreateParams;	return 0;
+		case WM_CREATE:		sge = (RetroGameEngine*)((LPCREATESTRUCT)lParam)->lpCreateParams;	return 0;
 		case WM_MOUSEMOVE:
 		{
 			uint16_t x = lParam & 0xFFFF;				// Thanks @ForAbby (Discord)
@@ -2100,7 +2100,7 @@ namespace jpr
 
 #if defined(__linux__)
 	// Do the Linux stuff!
-	Display* PixelGameEngine::jpr_WindowCreate()
+	Display* RetroGameEngine::jpr_WindowCreate()
 	{
 		XInitThreads();
 
@@ -2184,7 +2184,7 @@ namespace jpr
 		return jpr_Display;
 	}
 
-	bool PixelGameEngine::jpr_OpenGLCreate()
+	bool RetroGameEngine::jpr_OpenGLCreate()
 	{
 		glDeviceContext = glXCreateContext(jpr_Display, jpr_VisualInfo, nullptr, GL_TRUE);
 		glXMakeCurrent(jpr_Display, jpr_Window, glDeviceContext);
@@ -2212,9 +2212,9 @@ namespace jpr
 
 	// Need a couple of statics as these are singleton instances
 	// read from multiple locations
-	std::atomic<bool> PixelGameEngine::bAtomActive{ false };
-	std::map<size_t, uint8_t> PixelGameEngine::mapKeys;
-	jpr::PixelGameEngine* jpr::PGEX::pge = nullptr;
+	std::atomic<bool> RetroGameEngine::bAtomActive{ false };
+	std::map<size_t, uint8_t> RetroGameEngine::mapKeys;
+	jpr::RetroGameEngine* jpr::PGEX::pge = nullptr;
 #ifdef JPR_DBG_OVERDRAW
 	int jpr::Sprite::nOverdrawCount = 0;
 #endif
