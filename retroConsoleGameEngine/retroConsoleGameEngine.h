@@ -2,17 +2,11 @@
 
 Usage:
 ~~~~~~
-This class is abstract, so you must inherit from it. Override the OnUserCreate() function
-with all the stuff you need for your application (for thready reasons it's best to do
-this in this function and not your class constructor). Override the OnUserUpdate(float fElapsedTime)
-function with the good stuff, it gives you the elapsed time since the last call so you
-can modify your stuff dynamically. Both functions should return true, unless you need
-the application to close.
 
 	int main()
 	{
 		// Use retroConsoleGameEngine derived app
-		OneLoneCoder_Example game;
+		exampleGame;
 
 		// Create a console with resolution 160x100 characters
 		// Each character occupies 8x8 pixels
@@ -24,25 +18,14 @@ the application to close.
 		return 0;
 	}
 
-Input is also handled for you - interrogate the m_keys[] array with the virtual
-keycode you want to know about. bPressed is set for the frame the key is pressed down
-in, bHeld is set if the key is held down, bReleased is set for the frame the key
-is released in. The same applies to mouse! m_mousePosX and Y can be used to get
-the current cursor position, and m_mouse[1..5] returns the mouse buttons.
-
-The draw routines treat characters like pixels. By default they are set to white solid
-blocks - but you can draw any unicode character, using any of the colours listed below.
-
-There may be bugs!
-
 */
 
 #pragma once
 #pragma comment(lib, "winmm.lib")
 
 #ifndef UNICODE
-#error Please enable UNICODE for your compiler! VS: Project Properties -> General -> \
-Character Set -> Use Unicode.
+#error
+Please enable UNICODE for your compiler! VS: Project Properties -> General -> \ Character Set -> Use Unicode.
 #endif
 
 #include <windows.h>
@@ -868,7 +851,7 @@ private:
 
 				// Update Title & Present Screen Buffer
 				wchar_t s[256];
-				swprintf_s(s, 256, L"OneLoneCoder.com - Console Game Engine - %s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
+				swprintf_s(s, 256, L"jpromano.net - Retro Console Game Engine - %s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
 				SetConsoleTitle(s);
 				WriteConsoleOutput(m_hConsole, m_bufScreen, { (short)m_nScreenWidth, (short)m_nScreenHeight }, { 0,0 }, &m_rectWindow);
 			}
