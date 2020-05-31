@@ -1,7 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
-// Let's change all Pixel, PGE, PGEX and PIXEL
-
 /* Example Usage (main.cpp)
 	#define JPR_PGE_APPLICATION
 	#include "retroGameEngine.h"
@@ -37,8 +35,8 @@
 	}
 */
 
-#ifndef JPR_RGE_DEF
-#define JPR_RGE_DEF
+#ifndef JPR_PGE_DEF
+#define JPR_PGE_DEF
 
 #if defined(_WIN32) // WINDOWS specific includes ==============================================
 	// Link to libraries
