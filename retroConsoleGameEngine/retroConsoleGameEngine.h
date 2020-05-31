@@ -418,7 +418,6 @@ public:
 		DrawLine(x3, y3, x1, y1, c, col);
 	}
 
-	// https://www.avrfreaks.net/sites/default/files/triangles.c
 	void FillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, short c = 0x2588, short col = 0x000F)
 	{
 		auto SWAP = [](int &x, int &y) { int t = x; x = y; y = t; };
