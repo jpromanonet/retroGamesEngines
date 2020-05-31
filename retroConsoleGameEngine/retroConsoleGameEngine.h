@@ -433,7 +433,8 @@ public:
 		if (y1>y3) { SWAP(y1, y3); SWAP(x1, x3); }
 		if (y2>y3) { SWAP(y2, y3); SWAP(x2, x3); }
 
-		t1x = t2x = x1; y = y1;   // Starting points
+		// Starting points
+		t1x = t2x = x1; y = y1;   
 		dx1 = (int)(x2 - x1); if (dx1<0) { dx1 = -dx1; signx1 = -1; }
 		else signx1 = 1;
 		dy1 = (int)(y2 - y1);
