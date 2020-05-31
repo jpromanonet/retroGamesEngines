@@ -434,7 +434,7 @@ public:
 		if (y2>y3) { SWAP(y2, y3); SWAP(x2, x3); }
 
 		// Starting points
-		t1x = t2x = x1; y = y1;   
+		t1x = t2x = x1; y = y1;
 		dx1 = (int)(x2 - x1); if (dx1<0) { dx1 = -dx1; signx1 = -1; }
 		else signx1 = 1;
 		dy1 = (int)(y2 - y1);
@@ -443,11 +443,14 @@ public:
 		else signx2 = 1;
 		dy2 = (int)(y3 - y1);
 
-		if (dy1 > dx1) {   // swap values
+		// swap values
+		if (dy1 > dx1) {
 			SWAP(dx1, dy1);
 			changed1 = true;
 		}
-		if (dy2 > dx2) {   // swap values
+
+		// swap values
+		if (dy2 > dx2) {
 			SWAP(dy2, dx2);
 			changed2 = true;
 		}
@@ -467,7 +470,8 @@ public:
 				e1 += dy1;
 				while (e1 >= dx1) {
 					e1 -= dx1;
-					if (changed1) t1xp = signx1;//t1x += signx1;
+					//t1x += signx1;
+					if (changed1) t1xp = signx1;
 					else          goto next1;
 				}
 				if (changed1) break;
@@ -563,7 +567,8 @@ public:
 		int p = 3 - 2 * r;
 		if (!r) return;
 
-		while (y >= x) // only formulate 1/8 of circle
+		// only formulate 1/8 of circle
+		while (y >= x) 
 		{
 			Draw(xc - x, yc - y, c, col);//upper left left
 			Draw(xc - y, yc - x, c, col);//upper upper left
