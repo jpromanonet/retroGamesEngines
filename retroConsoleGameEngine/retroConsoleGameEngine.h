@@ -568,7 +568,7 @@ public:
 		if (!r) return;
 
 		// only formulate 1/8 of circle
-		while (y >= x) 
+		while (y >= x)
 		{
 			Draw(xc - x, yc - y, c, col);//upper left left
 			Draw(xc - y, yc - x, c, col);//upper upper left
@@ -718,7 +718,7 @@ private:
 		{
 			if (!CreateAudio())
 			{
-				m_bAtomActive = false; // Failed to create audio system
+				m_bAtomActive = false;
 				m_bEnableSound = false;
 			}
 		}
@@ -769,8 +769,7 @@ private:
 				if (events > 0)
 					ReadConsoleInput(m_hConsoleIn, inBuf, events, &events);
 
-				// Handle events - we only care about mouse clicks and movement
-				// for now
+				// Handle events - we only care about mouse clicks and movement for now
 				for (DWORD i = 0; i < events; i++)
 				{
 					switch (inBuf[i].EventType)
