@@ -895,21 +895,21 @@ protected:
 
 			char dump[4];
 			// Read "RIFF"
-			std::fread(&dump, sizeof(char), 4, f); 
+			std::fread(&dump, sizeof(char), 4, f);
 			if (strncmp(dump, "RIFF", 4) != 0) return;
 			// Not Interested
-			std::fread(&dump, sizeof(char), 4, f); 
+			std::fread(&dump, sizeof(char), 4, f);
 			// Read "WAVE"
-			std::fread(&dump, sizeof(char), 4, f); 
+			std::fread(&dump, sizeof(char), 4, f);
 			if (strncmp(dump, "WAVE", 4) != 0) return;
 
 			// Read Wave description chunk
 			// Read "fmt "
 			std::fread(&dump, sizeof(char), 4, f);
-			 // Not Interested 
+			 // Not Interested
 			std::fread(&dump, sizeof(char), 4, f);
 			// Read only wav files
-			std::fread(&wavHeader, sizeof(WAVEFORMATEX) - 2, 1, f); 
+			std::fread(&wavHeader, sizeof(WAVEFORMATEX) - 2, 1, f);
 
 			// Just check if wave format is compatible with jprCGE
 			if (wavHeader.wBitsPerSample != 16 || wavHeader.nSamplesPerSec != 44100)
@@ -965,9 +965,7 @@ protected:
 	// This vector holds all loaded sound samples in memory
 	std::vector<jprAudioSample> vecAudioSamples;
 
-	// This structure represents a sound that is currently playing. It only
-	// holds the sound ID and where this instance of it is up to for its
-	// current playback
+	// This structure represents a sound that is currently playing.
 	struct sCurrentlyPlayingSample
 	{
 		int nAudioSampleID = 0;
