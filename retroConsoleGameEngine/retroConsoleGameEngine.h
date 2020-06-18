@@ -875,9 +875,8 @@ public:
 	virtual bool OnUserDestroy()						{ return true; }
 
 
-
-protected: // Audio Engine =====================================================================
-
+// Audio Engine
+protected:
 	class jprAudioSample
 	{
 	public:
@@ -895,18 +894,22 @@ protected: // Audio Engine =====================================================
 				return;
 
 			char dump[4];
-			std::fread(&dump, sizeof(char), 4, f); // Read "RIFF"
+			// Read "RIFF"
+			std::fread(&dump, sizeof(char), 4, f); 
 			if (strncmp(dump, "RIFF", 4) != 0) return;
-			std::fread(&dump, sizeof(char), 4, f); // Not Interested
-			std::fread(&dump, sizeof(char), 4, f); // Read "WAVE"
+			// Not Interested
+			std::fread(&dump, sizeof(char), 4, f); 
+			// Read "WAVE"
+			std::fread(&dump, sizeof(char), 4, f); 
 			if (strncmp(dump, "WAVE", 4) != 0) return;
 
 			// Read Wave description chunk
-			std::fread(&dump, sizeof(char), 4, f); // Read "fmt "
-			std::fread(&dump, sizeof(char), 4, f); // Not Interested
-			std::fread(&wavHeader, sizeof(WAVEFORMATEX) - 2, 1, f); // Read Wave Format Structure chunk
-																	// Note the -2, because the structure has 2 bytes to indicate its own size
-																	// which are not in the wav file
+			// Read "fmt "
+			std::fread(&dump, sizeof(char), 4, f);
+			 // Not Interested 
+			std::fread(&dump, sizeof(char), 4, f);
+			// Read only wav files
+			std::fread(&wavHeader, sizeof(WAVEFORMATEX) - 2, 1, f); 
 
 			// Just check if wave format is compatible with jprCGE
 			if (wavHeader.wBitsPerSample != 16 || wavHeader.nSamplesPerSec != 44100)
