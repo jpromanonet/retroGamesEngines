@@ -1,3 +1,5 @@
+// There is an MIT license, do whatever you want with this code! have fun :)
+
 /*
 
 Usage:
@@ -1176,7 +1178,7 @@ protected:
 				fMixerSample += vecAudioSamples[s.nAudioSampleID - 1].fSample[(s.nSamplePosition * vecAudioSamples[s.nAudioSampleID - 1].nChannels) + nChannel];
 			else
 				s.bFinished = true;
-				// Else sound has completed 
+				// Else sound has completed
 		}
 
 		// If sounds have completed then remove them
