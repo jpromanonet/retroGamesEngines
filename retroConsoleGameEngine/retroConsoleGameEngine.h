@@ -975,8 +975,7 @@ protected:
 	};
 	std::list<sCurrentlyPlayingSample> listActiveSamples;
 
-	// Load a 16-bit WAVE file @ 44100Hz ONLY into memory. A sample ID
-	// number is returned if successful, otherwise -1
+	// Load a 16-bit WAVE file @ 44100Hz ONLY into memory
 	unsigned int LoadAudioSample(std::wstring sWavFile)
 	{
 		if (!m_bEnableSound)
@@ -1087,7 +1086,7 @@ protected:
 	}
 
 	// Audio thread. This loop responds to requests from the soundcard to fill 'blocks'
-	// with audio data. If no requests are available it goes dormant until the sound
+	// with audio data. If no requests are available it goes idle until the sound
 	// card is ready for more data. The block is fille by the "user" in some manner
 	// and then issued to the soundcard.
 	void AudioThread()
@@ -1161,23 +1160,7 @@ protected:
 		return fSample;
 	}
 
-	// The Sound Mixer - If the user wants to play many sounds simultaneously, and
-	// perhaps the same sound overlapping itself, then you need a mixer, which
-	// takes input from all sound sources for that audio frame. This mixer maintains
-	// a list of sound locations for all concurrently playing audio samples. Instead
-	// of duplicating audio data, we simply store the fact that a sound sample is in
-	// use and an offset into its sample data. As time progresses we update this offset
-	// until it is beyound the length of the sound sample it is attached to. At this
-	// point we remove the playing souind from the list.
-	//
-	// Additionally, the users application may want to generate sound instead of just
-	// playing audio clips (think a synthesizer for example) in whcih case we also
-	// provide an "onUser..." event to allow the user to return a sound for that point
-	// in time.
-	//
-	// Finally, before the sound is issued to the operating system for performing, the
-	// user gets one final chance to "filter" the sound, perhaps changing the volume
-	// or adding funky effects
+	// The Sound Mixer
 	float GetMixerOutput(int nChannel, float fGlobalTime, float fTimeStep)
 	{
 		// Accumulate sample for this channel
@@ -1192,7 +1175,8 @@ protected:
 			if (s.nSamplePosition < vecAudioSamples[s.nAudioSampleID - 1].nSamples)
 				fMixerSample += vecAudioSamples[s.nAudioSampleID - 1].fSample[(s.nSamplePosition * vecAudioSamples[s.nAudioSampleID - 1].nChannels) + nChannel];
 			else
-				s.bFinished = true; // Else sound has completed
+				s.bFinished = true;
+				// Else sound has completed 
 		}
 
 		// If sounds have completed then remove them
