@@ -39,11 +39,13 @@
 #define JPR_PGE_DEF
 
 // WINDOWS specific includes
-#if defined(_WIN32) 
+#if defined(_WIN32)
 	// Link to libraries
 #ifndef __MINGW32__
-	#pragma comment(lib, "user32.lib")		// Visual Studio Only
-	#pragma comment(lib, "gdi32.lib")		// For other Windows Compilers please add
+	// Visual Studio Only
+	#pragma comment(lib, "user32.lib")
+	// For other Windows Compilers please add		
+	#pragma comment(lib, "gdi32.lib")		
 	#pragma comment(lib, "opengl32.lib")	// these libs to your linker input
 	#pragma comment(lib, "gdiplus.lib")
 #else
