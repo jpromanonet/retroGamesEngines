@@ -55,10 +55,10 @@
 	#if !defined _WIN32_WINNT
         #ifdef HAVE_MSMF
 			// Windows Vista
-            #define _WIN32_WINNT 0x0600 
+            #define _WIN32_WINNT 0x0600
         #else
 			// Windows 2000
-            #define _WIN32_WINNT 0x0500 
+            #define _WIN32_WINNT 0x0500
         #endif
     #endif
 #endif
@@ -72,7 +72,8 @@
 	static wglSwapInterval_t *wglSwapInterval;
 #endif
 
-#ifdef __linux__ // LINUX specific includes ==============================================
+// LINUX specific includes
+#ifdef __linux__ 
 	#include <GL/gl.h>
 	#include <GL/glx.h>
 	#include <X11/X.h>
