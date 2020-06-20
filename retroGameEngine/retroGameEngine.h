@@ -44,18 +44,21 @@
 #ifndef __MINGW32__
 	// Visual Studio Only
 	#pragma comment(lib, "user32.lib")
-	// For other Windows Compilers please add		
-	#pragma comment(lib, "gdi32.lib")		
-	#pragma comment(lib, "opengl32.lib")	// these libs to your linker input
+	// For other Windows Compilers please add
+	#pragma comment(lib, "gdi32.lib")
+	// these libs to your linker input
+	#pragma comment(lib, "opengl32.lib")
 	#pragma comment(lib, "gdiplus.lib")
 #else
 	// In Code::Blocks, Select C++14 in your build options, and add the
 	// following libs to your linker: user32 gdi32 opengl32 gdiplus
 	#if !defined _WIN32_WINNT
         #ifdef HAVE_MSMF
-            #define _WIN32_WINNT 0x0600 // Windows Vista
+			// Windows Vista
+            #define _WIN32_WINNT 0x0600 
         #else
-            #define _WIN32_WINNT 0x0500 // Windows 2000
+			// Windows 2000
+            #define _WIN32_WINNT 0x0500 
         #endif
     #endif
 #endif
