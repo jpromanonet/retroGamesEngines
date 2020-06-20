@@ -38,7 +38,8 @@
 #ifndef JPR_PGE_DEF
 #define JPR_PGE_DEF
 
-#if defined(_WIN32) // WINDOWS specific includes ==============================================
+// WINDOWS specific includes
+#if defined(_WIN32) 
 	// Link to libraries
 #ifndef __MINGW32__
 	#pragma comment(lib, "user32.lib")		// Visual Studio Only
