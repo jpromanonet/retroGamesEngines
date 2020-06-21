@@ -38,6 +38,7 @@
 #ifndef JPR_PGE_DEF
 #define JPR_PGE_DEF
 
+<<<<<<< HEAD:retroGameEngine.h
 #if defined(_WIN32) // WINDOWS specific includes ==============================================
 					// Link to libraries
 #ifndef __MINGW32__
@@ -53,8 +54,34 @@
 #define _WIN32_WINNT 0x0600 // Windows Vista
 #else
 #define _WIN32_WINNT 0x0500 // Windows 2000
+=======
+// WINDOWS specific includes
+#if defined(_WIN32)
+	// Link to libraries
+#ifndef __MINGW32__
+	// Visual Studio Only
+	#pragma comment(lib, "user32.lib")
+	// For other Windows Compilers please add
+	#pragma comment(lib, "gdi32.lib")
+	// these libs to your linker input
+	#pragma comment(lib, "opengl32.lib")
+	#pragma comment(lib, "gdiplus.lib")
+#else
+	// In Code::Blocks, Select C++14 in your build options, and add the
+	// following libs to your linker: user32 gdi32 opengl32 gdiplus
+	#if !defined _WIN32_WINNT
+        #ifdef HAVE_MSMF
+			// Windows Vista
+            #define _WIN32_WINNT 0x0600
+        #else
+			// Windows 2000
+            #define _WIN32_WINNT 0x0500
+        #endif
+    #endif
+>>>>>>> 478f0ea90b21fbe99511a69f6587a2f1e9bde24c:retroGameEngine/retroGameEngine.h
 #endif
 #endif
+<<<<<<< HEAD:retroGameEngine.h
 #endif
 // Include WinAPI
 #include <windows.h>
@@ -64,6 +91,18 @@
 #include <GL/gl.h>
 typedef BOOL(WINAPI wglSwapInterval_t)(int interval);
 static wglSwapInterval_t *wglSwapInterval;
+=======
+
+// LINUX specific includes
+#ifdef __linux__ 
+	#include <GL/gl.h>
+	#include <GL/glx.h>
+	#include <X11/X.h>
+	#include <X11/Xlib.h>
+	#include <png.h>
+	typedef int(glSwapInterval_t) (Display *dpy, GLXDrawable drawable, int interval);
+	static glSwapInterval_t *glSwapIntervalEXT;
+>>>>>>> 478f0ea90b21fbe99511a69f6587a2f1e9bde24c:retroGameEngine/retroGameEngine.h
 #endif
 
 // LINUX specific includes
