@@ -264,8 +264,6 @@ namespace jpr
 
 	};
 
-	//=============================================================
-
 	enum Key
 	{
 		NONE,
@@ -278,9 +276,6 @@ namespace jpr
 		NP0, NP1, NP2, NP3, NP4, NP5, NP6, NP7, NP8, NP9,
 		NP_MUL, NP_DIV, NP_ADD, NP_SUB, NP_DECIMAL,
 	};
-
-
-	//=============================================================
 
 	class RetroGameEngine
 	{
