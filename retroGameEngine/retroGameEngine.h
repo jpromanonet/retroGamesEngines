@@ -287,7 +287,7 @@ namespace jpr
 		jpr::rcode	Start();
 
 	// Override Interfaces
-	public: 
+	public:
 		// Called once on application startup, use to load your resources
 		virtual bool OnUserCreate();
 		// Called every frame, and provides you with a time per frame value
@@ -309,7 +309,8 @@ namespace jpr
 		// Get Mouse Wheel Delta
 		int32_t GetMouseWheel();
 
-	public: // Utility
+	// Utility
+	public: 
 		// Returns the width of the screen in "pixels"
 		int32_t ScreenWidth();
 		// Returns the height of the screen in "pixels"
