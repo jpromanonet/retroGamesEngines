@@ -473,7 +473,8 @@ namespace jpr
 	};
 }
 
-#endif // JPR_PGE_DEF
+// JPR_PGE_DEF
+#endif 
 
 
 
