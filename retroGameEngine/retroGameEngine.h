@@ -286,7 +286,8 @@ namespace jpr
 		jpr::rcode	Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen = false, bool vsync = false);
 		jpr::rcode	Start();
 
-	public: // Override Interfaces
+	// Override Interfaces
+	public: 
 		// Called once on application startup, use to load your resources
 		virtual bool OnUserCreate();
 		// Called every frame, and provides you with a time per frame value
