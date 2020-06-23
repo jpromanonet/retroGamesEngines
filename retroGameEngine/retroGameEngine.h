@@ -310,7 +310,7 @@ namespace jpr
 		int32_t GetMouseWheel();
 
 	// Utility
-	public: 
+	public:
 		// Returns the width of the screen in "pixels"
 		int32_t ScreenWidth();
 		// Returns the height of the screen in "pixels"
@@ -322,11 +322,13 @@ namespace jpr
 		// Returns the currently active draw target
 		Sprite* GetDrawTarget();
 
-	public: // Draw Routines
+	// Draw Routines
+	public:
 		// Specify which Sprite should be the target of drawing functions, use nullptr
 		// to specify the primary screen
 		void SetDrawTarget(Sprite *target);
 		// Change the pixel mode for different optimisations
+		
 		// jpr::Pixel::NORMAL = No transparency
 		// jpr::Pixel::MASK   = Transparent if alpha is < 255
 		// jpr::Pixel::ALPHA  = Full transparency
