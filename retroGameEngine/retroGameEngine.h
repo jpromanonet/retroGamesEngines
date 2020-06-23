@@ -370,10 +370,11 @@ namespace jpr
 		void SetScreenSize(int w, int h);
 
 	// Branding
-	public: 
+	public:
 		std::string sAppName;
 
-	private: // Inner mysterious workings
+	// Inner mysterious workings
+	private:
 		Sprite		*pDefaultDrawTarget = nullptr;
 		Sprite		*pDrawTarget = nullptr;
 		Pixel::Mode	nPixelMode = Pixel::NORMAL;
@@ -470,8 +471,6 @@ namespace jpr
 	protected:
 		static RetroGameEngine* pge;
 	};
-
-	//=============================================================
 }
 
 #endif // JPR_PGE_DEF
