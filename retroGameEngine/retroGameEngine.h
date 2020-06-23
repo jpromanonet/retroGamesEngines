@@ -191,7 +191,8 @@ namespace jpr
 
 	struct HWButton
 	{
-		bool bPressed = false;	// Set once during the frame the event occurs
+		// Set once during the frame the event occurs
+		bool bPressed = false;	
 		bool bReleased = false;	// Set once during the frame the event occurs
 		bool bHeld = false;		// Set true for all frames between pressed and released events
 	};
