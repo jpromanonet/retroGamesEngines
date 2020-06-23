@@ -474,7 +474,7 @@ namespace jpr
 }
 
 // JPR_PGE_DEF
-#endif 
+#endif
 
 
 
@@ -526,8 +526,6 @@ namespace jpr
 	{
 		return n != p.n;
 	}
-
-	//==========================================================
 
 #if defined(_WIN32)
 	std::wstring ConvertS2W(std::string s)
