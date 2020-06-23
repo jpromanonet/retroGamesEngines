@@ -224,8 +224,6 @@ namespace jpr
 		std::map<std::string, sEntry> mapFiles;
 	};
 
-	//=============================================================
-
 	// A bitmap-like structure that stores a 2D array of Pixels
 	class Sprite
 	{
