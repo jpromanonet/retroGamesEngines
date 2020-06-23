@@ -189,17 +189,12 @@ namespace jpr
 	typedef v2d_generic<float> vf2d;
 	typedef v2d_generic<double> vd2d;
 
-	//=============================================================
-
 	struct HWButton
 	{
 		bool bPressed = false;	// Set once during the frame the event occurs
 		bool bReleased = false;	// Set once during the frame the event occurs
 		bool bHeld = false;		// Set true for all frames between pressed and released events
 	};
-
-	//=============================================================
-
 
 	class ResourcePack
 	{
