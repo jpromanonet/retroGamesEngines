@@ -328,7 +328,7 @@ namespace jpr
 		// to specify the primary screen
 		void SetDrawTarget(Sprite *target);
 		// Change the pixel mode for different optimisations
-		
+
 		// jpr::Pixel::NORMAL = No transparency
 		// jpr::Pixel::MASK   = Transparent if alpha is < 255
 		// jpr::Pixel::ALPHA  = Full transparency
@@ -369,7 +369,8 @@ namespace jpr
 		// Resize the primary screen sprite
 		void SetScreenSize(int w, int h);
 
-	public: // Branding
+	// Branding
+	public: 
 		std::string sAppName;
 
 	private: // Inner mysterious workings
