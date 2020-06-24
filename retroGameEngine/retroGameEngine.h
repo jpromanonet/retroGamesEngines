@@ -657,9 +657,6 @@ namespace jpr
 #endif
 
 #if defined(__linux__)
-		////////////////////////////////////////////////////////////////////////////
-		// Use libpng, Thanks to Guillaume Cottenceau
-		// https://gist.github.com/niw/5963798
 		png_structp png;
 		png_infop info;
 
