@@ -2019,7 +2019,7 @@ namespace jpr
 
 		mapKeys[VK_DOWN] = Key::DOWN; mapKeys[VK_LEFT] = Key::LEFT; mapKeys[VK_RIGHT] = Key::RIGHT; mapKeys[VK_UP] = Key::UP;
 		//mapKeys[VK_RETURN] = Key::RETURN;
-		mapKeys[VK_RETURN] = Key::ENTER; 
+		mapKeys[VK_RETURN] = Key::ENTER;
 
 		mapKeys[VK_BACK] = Key::BACK; mapKeys[VK_ESCAPE] = Key::ESCAPE; mapKeys[VK_RETURN] = Key::ENTER; mapKeys[VK_PAUSE] = Key::PAUSE;
 		mapKeys[VK_SCROLL] = Key::SCROLL; mapKeys[VK_TAB] = Key::TAB; mapKeys[VK_DELETE] = Key::DEL; mapKeys[VK_HOME] = Key::HOME;
@@ -2073,7 +2073,7 @@ namespace jpr
 		case WM_CREATE:		sge = (RetroGameEngine*)((LPCREATESTRUCT)lParam)->lpCreateParams;	return 0;
 		case WM_MOUSEMOVE:
 		{
-			uint16_t x = lParam & 0xFFFF;				// Thanks @ForAbby (Discord)
+			uint16_t x = lParam & 0xFFFF;
 			uint16_t y = (lParam >> 16) & 0xFFFF;
 			int16_t ix = *(int16_t*)&x;
 			int16_t iy = *(int16_t*)&y;
@@ -2136,7 +2136,7 @@ namespace jpr
 		XMapWindow(jpr_Display, jpr_Window);
 		XStoreName(jpr_Display, jpr_Window, "jpromano.net - Pixel Game Engine");
 
-		if (bFullScreen) // Thanks DragonEye, again :D
+		if (bFullScreen)
 		{
 			Atom wm_state;
 			Atom fullscreen;
@@ -2147,10 +2147,14 @@ namespace jpr
 			xev.xclient.window = jpr_Window;
 			xev.xclient.message_type = wm_state;
 			xev.xclient.format = 32;
-			xev.xclient.data.l[0] = (bFullScreen ? 1 : 0);   // the action (0: off, 1: on, 2: toggle)
-			xev.xclient.data.l[1] = fullscreen;             // first property to alter
-			xev.xclient.data.l[2] = 0;                      // second property to alter
-			xev.xclient.data.l[3] = 0;                      // source indication
+			// the action (0: off, 1: on, 2: toggle)
+			xev.xclient.data.l[0] = (bFullScreen ? 1 : 0);
+			// first property to alter
+			xev.xclient.data.l[1] = fullscreen;
+			// second property to alter
+			xev.xclient.data.l[2] = 0;
+			// source indication
+			xev.xclient.data.l[3] = 0;
 			XMapWindow(jpr_Display, jpr_Window);
 			XSendEvent(jpr_Display, DefaultRootWindow(jpr_Display), False,
 				SubstructureRedirectMask | SubstructureNotifyMask, &xev);
@@ -2228,7 +2232,6 @@ namespace jpr
 #ifdef JPR_DBG_OVERDRAW
 	int jpr::Sprite::nOverdrawCount = 0;
 #endif
-	//=============================================================
 }
 
 #endif
