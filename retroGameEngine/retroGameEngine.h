@@ -1697,7 +1697,7 @@ namespace jpr
 					{
 						KeySym sym = XLookupKeysym(&xev.xkey, 0);
 						pKeyNewState[mapKeys[sym]] = true;
-						XKeyEvent *e = (XKeyEvent *)&xev; // Because DragonEye loves numpads
+						XKeyEvent *e = (XKeyEvent *)&xev;
 						XLookupString(e, NULL, 0, &sym, NULL);
 						pKeyNewState[mapKeys[sym]] = true;
 					}
