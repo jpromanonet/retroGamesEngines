@@ -1149,7 +1149,7 @@ namespace jpr
 		}
 
 		// Line is horizontal
-		if (dy == 0) 
+		if (dy == 0)
 		{
 			if (x2 < x1) std::swap(x1, x2);
 			for (x = x1; x <= x2; x++)
@@ -1221,7 +1221,8 @@ namespace jpr
 		int d = 3 - 2 * radius;
 		if (!radius) return;
 
-		while (y0 >= x0) // only formulate 1/8 of circle
+		// only formulate 1/8 of circle
+		while (y0 >= x0)
 		{
 			if (mask & 0x01) Draw(x + x0, y - y0, p);
 			if (mask & 0x02) Draw(x + y0, y - x0, p);
@@ -1308,7 +1309,6 @@ namespace jpr
 		DrawLine(x3, y3, x1, y1, p);
 	}
 
-	// https://www.avrfreaks.net/sites/default/files/triangles.c
 	void RetroGameEngine::FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p)
 	{
 		auto SWAP = [](int &x, int &y) { int t = x; x = y; y = t; };
@@ -1319,12 +1319,14 @@ namespace jpr
 		bool changed2 = false;
 		int signx1, signx2, dx1, dy1, dx2, dy2;
 		int e1, e2;
+
 		// Sort vertices
 		if (y1>y2) { SWAP(y1, y2); SWAP(x1, x2); }
 		if (y1>y3) { SWAP(y1, y3); SWAP(x1, x3); }
 		if (y2>y3) { SWAP(y2, y3); SWAP(x2, x3); }
 
-		t1x = t2x = x1; y = y1;   // Starting points
+		// Starting points
+		t1x = t2x = x1; y = y1;   
 		dx1 = (int)(x2 - x1); if (dx1<0) { dx1 = -dx1; signx1 = -1; }
 		else signx1 = 1;
 		dy1 = (int)(y2 - y1);
@@ -1333,11 +1335,14 @@ namespace jpr
 		else signx2 = 1;
 		dy2 = (int)(y3 - y1);
 
-		if (dy1 > dx1) {   // swap values
+		// swap values
+		if (dy1 > dx1) {   
 			SWAP(dx1, dy1);
 			changed1 = true;
 		}
-		if (dy2 > dx2) {   // swap values
+
+		// swap values
+		if (dy2 > dx2) {   
 			SWAP(dy2, dx2);
 			changed2 = true;
 		}
