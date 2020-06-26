@@ -1886,8 +1886,9 @@ namespace jpr
 	}
 
 #if defined (_WIN32)
-	// Thanks @MaGetzUb for this, which allows sprites to be defined
+	// Allows sprites to be defined
 	// at construction, by initialising the GDI subsystem
+
 	static class GDIPlusStartup
 	{
 	public:
@@ -2017,7 +2018,8 @@ namespace jpr
 		mapKeys[VK_F9] = Key::F9; mapKeys[VK_F10] = Key::F10; mapKeys[VK_F11] = Key::F11; mapKeys[VK_F12] = Key::F12;
 
 		mapKeys[VK_DOWN] = Key::DOWN; mapKeys[VK_LEFT] = Key::LEFT; mapKeys[VK_RIGHT] = Key::RIGHT; mapKeys[VK_UP] = Key::UP;
-		mapKeys[VK_RETURN] = Key::ENTER; //mapKeys[VK_RETURN] = Key::RETURN;
+		//mapKeys[VK_RETURN] = Key::RETURN;
+		mapKeys[VK_RETURN] = Key::ENTER; 
 
 		mapKeys[VK_BACK] = Key::BACK; mapKeys[VK_ESCAPE] = Key::ESCAPE; mapKeys[VK_RETURN] = Key::ENTER; mapKeys[VK_PAUSE] = Key::PAUSE;
 		mapKeys[VK_SCROLL] = Key::SCROLL; mapKeys[VK_TAB] = Key::TAB; mapKeys[VK_DELETE] = Key::DEL; mapKeys[VK_HOME] = Key::HOME;
