@@ -1138,8 +1138,9 @@ namespace jpr
 			return pattern & 1;
 		};
 
-		// straight lines idea by gurkanctn
-		if (dx == 0) // Line is vertical
+		// straight lines
+		// Line is vertical
+		if (dx == 0)
 		{
 			if (y2 < y1) std::swap(y1, y2);
 			for (y = y1; y <= y2; y++)
@@ -1147,7 +1148,8 @@ namespace jpr
 			return;
 		}
 
-		if (dy == 0) // Line is horizontal
+		// Line is horizontal
+		if (dy == 0) 
 		{
 			if (x2 < x1) std::swap(x1, x2);
 			for (x = x1; x <= x2; x++)
