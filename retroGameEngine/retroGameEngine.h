@@ -1326,7 +1326,7 @@ namespace jpr
 		if (y2>y3) { SWAP(y2, y3); SWAP(x2, x3); }
 
 		// Starting points
-		t1x = t2x = x1; y = y1;   
+		t1x = t2x = x1; y = y1;
 		dx1 = (int)(x2 - x1); if (dx1<0) { dx1 = -dx1; signx1 = -1; }
 		else signx1 = 1;
 		dy1 = (int)(y2 - y1);
@@ -1336,13 +1336,13 @@ namespace jpr
 		dy2 = (int)(y3 - y1);
 
 		// swap values
-		if (dy1 > dx1) {   
+		if (dy1 > dx1) {
 			SWAP(dx1, dy1);
 			changed1 = true;
 		}
 
 		// swap values
-		if (dy2 > dx2) {   
+		if (dy2 > dx2) {
 			SWAP(dy2, dx2);
 			changed2 = true;
 		}
@@ -1362,7 +1362,8 @@ namespace jpr
 				e1 += dy1;
 				while (e1 >= dx1) {
 					e1 -= dx1;
-					if (changed1) t1xp = signx1;//t1x += signx1;
+					//t1x += signx1;
+					if (changed1) t1xp = signx1;
 					else          goto next1;
 				}
 				if (changed1) break;
@@ -1375,7 +1376,8 @@ namespace jpr
 				e2 += dy2;
 				while (e2 >= dx2) {
 					e2 -= dx2;
-					if (changed2) t2xp = signx2;//t2x += signx2;
+					//t2x += signx2;
+					if (changed2) t2xp = signx2;
 					else          goto next2;
 				}
 				if (changed2)     break;
