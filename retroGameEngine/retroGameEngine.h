@@ -1569,13 +1569,13 @@ namespace jpr
 	// User must override these functions as required. I have not made
 	// them abstract because I do need a default behaviour to occur if
 	// they are not overwritten
+
 	bool RetroGameEngine::OnUserCreate()
 	{ return false; }
 	bool RetroGameEngine::OnUserUpdate(float fElapsedTime)
 	{ UNUSED(fElapsedTime);  return false; }
 	bool RetroGameEngine::OnUserDestroy()
 	{ return true; }
-	//////////////////////////////////////////////////////////////////
 
 	void RetroGameEngine::jpr_UpdateViewport()
 	{
@@ -1613,8 +1613,8 @@ namespace jpr
 	{
 		// Mouse coords come in screen space
 		// But leave in pixel space
-
 		// Full Screen mode may have a weird viewport we must clamp to
+
 		x -= nViewX;
 		y -= nViewY;
 
@@ -1669,9 +1669,11 @@ namespace jpr
 				float fElapsedTime = elapsedTime.count();
 
 #if defined(__linux__)
+
 				// Handle Xlib Message Loop - we do this in the
 				// same thread that OpenGL was created so we dont
 				// need to worry too much about multithreading with X11
+
 				XEvent xev;
 				while (XPending(jpr_Display))
 				{
@@ -1683,7 +1685,7 @@ namespace jpr
 						nWindowWidth = gwa.width;
 						nWindowHeight = gwa.height;
 						jpr_UpdateViewport();
-						glClear(GL_COLOR_BUFFER_BIT); // Thanks Benedani!
+						glClear(GL_COLOR_BUFFER_BIT);
 					}
 					else if (xev.type == ConfigureNotify)
 					{
