@@ -1815,7 +1815,7 @@ namespace jpr
 				// Display Graphics
 				glViewport(nViewX, nViewY, nViewW, nViewH);
 
-				// TODO: This is a bit slow (especially in debug, but 100x faster in release mode???)
+				// TODO: This is a bit slow (especially in debug, but 100x faster in release mode)
 				// Copy pixel array into texture
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, nScreenWidth, nScreenHeight, GL_RGBA, GL_UNSIGNED_BYTE, pDefaultDrawTarget->GetData());
 
