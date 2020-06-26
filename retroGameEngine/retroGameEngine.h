@@ -1388,8 +1388,9 @@ namespace jpr
 			if (minx>t2x) minx = t2x;
 			if (maxx<t1x) maxx = t1x;
 			if (maxx<t2x) maxx = t2x;
-			drawline(minx, maxx, y);    // Draw line from min to max points found on the y
-										// Now increase y
+			// Draw line from min to max points found on the y
+			drawline(minx, maxx, y);
+			// Now increase y
 			if (!changed1) t1x += signx1;
 			t1x += t1xp;
 			if (!changed2) t2x += signx2;
@@ -1405,7 +1406,8 @@ namespace jpr
 		dy1 = (int)(y3 - y2);
 		t1x = x2;
 
-		if (dy1 > dx1) {   // swap values
+		// swap values
+		if (dy1 > dx1) {
 			SWAP(dy1, dx1);
 			changed1 = true;
 		}
@@ -1417,12 +1419,14 @@ namespace jpr
 			t1xp = 0; t2xp = 0;
 			if (t1x<t2x) { minx = t1x; maxx = t2x; }
 			else { minx = t2x; maxx = t1x; }
+
 			// process first line until y value is about to change
 			while (i<dx1) {
 				e1 += dy1;
 				while (e1 >= dx1) {
 					e1 -= dx1;
-					if (changed1) { t1xp = signx1; break; }//t1x += signx1;
+					//t1x += signx1;
+					if (changed1) { t1xp = signx1; break; }
 					else          goto next3;
 				}
 				if (changed1) break;
