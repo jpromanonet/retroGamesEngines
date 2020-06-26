@@ -937,8 +937,6 @@ namespace jpr
 		return jpr::OK;
 	}
 
-	//==========================================================
-
 	RetroGameEngine::RetroGameEngine()
 	{
 		sAppName = "Undefined";
